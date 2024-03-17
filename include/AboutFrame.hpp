@@ -2,7 +2,7 @@
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
-#endif
+#endif // WX_PRECOMP
 
 namespace ow{
     class AboutFrame : public wxDialog{
@@ -11,4 +11,4 @@ namespace ow{
         protected:
         private:
     };
-}
+} // namespace ow

@@ -7,7 +7,7 @@ enum eventID{
     ID_NEW_ALMODES
 };
 
-MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "OpenWINGS", wxDefaultPosition, wxSize(1366,768)){
+MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultPosition, wxSize(1366,768)){
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
     // menus
     wxMenu* pFileMenu = new wxMenu;
@@ -15,10 +15,12 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "OpenWINGS", wxDefaultPositi
     pFileMenu->Append(ID_NEW_ALMODES, wxT("New &ALMODES\tA"), wxT("Create new ALMODES project"));
     pFileMenu->Append(wxID_OPEN, wxT("&Open\tO"), wxT("Open project"));
     pFileMenu->Append(wxID_SEPARATOR);
-    pFileMenu->Append(wxID_SAVE, wxT("&Save\tS"), wxT("Save current project"));
-    pFileMenu->Append(wxID_SAVEAS, wxT("Sa&ve as...\tShift+S"), wxT("Save current project as..."));
+    pFileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Save current project"));
+    pFileMenu->Append(wxID_SAVEAS, wxT("Sa&ve as...\tCtrl+Shift+S"), wxT("Save current project as..."));
     pFileMenu->Append(wxID_SEPARATOR);
     pFileMenu->Append(wxID_EXIT, wxT("&Quit\tQ"), wxT("Quit this program"));
+    pFileMenu->Enable(wxID_SAVE,false);
+    pFileMenu->Enable(wxID_SAVEAS,false);
     wxMenu* pHelpMenu = new wxMenu;
     pHelpMenu->Append(wxID_ABOUT, wxT("&About...\tF1"), wxT("Show about dialog"));
     // menu bar
@@ -64,7 +66,6 @@ void MainFrame::SetPanel(wxPanel* panel){
 }
 
 void MainFrame::OnNewFile(wxCommandEvent &event){
-    // int id = event.GetId();
     switch(event.GetId()){
         case ID_NEW_WINGS:
             this->SetPanel(this->pWingsEditPanel);
@@ -75,10 +76,30 @@ void MainFrame::OnNewFile(wxCommandEvent &event){
         default:
             return;
     }
+    this->EnableSaving(true);
 }
 
 void MainFrame::OnOpen(wxCommandEvent &event){
-    1;
+    wxString fileName = wxLoadFileSelector(wxT("a project"), "XML", wxEmptyString, this);
+	if(!fileName.empty()){
+        pFile = new wxTextFile(fileName);
+        if(pFile->Exists()){
+            // TODO: implement XML handling
+            // SetStatusText(fileName);
+            // pFile->Close();
+            this->EnableSaving(true);
+        }else{
+            wxMessageDialog errDlg = wxMessageDialog(this, wxT("Couldn't load file"), wxT("Error"));
+            errDlg.ShowModal();
+        }
+    }
+}
+
+void MainFrame::EnableSaving(bool enable){
+    if(this->pFile){
+        this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVE, enable);
+    }
+    this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVEAS, enable);
 }
 
 void MainFrame::OnSave(wxCommandEvent &event){
