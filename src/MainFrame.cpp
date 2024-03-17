@@ -28,14 +28,14 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "OpenWINGS", wxDefaultPositi
     SetMenuBar(pMenuBar);
     // panels
 	pMainSizer = new wxBoxSizer(wxVERTICAL);
-	wxPanel* pWingsEditPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	pWingsEditPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     pWingsEditPanel->SetBackgroundColour(wxColour(128, 255, 0));
-	wxPanel* pAlmodesEditPanel = new wxPanel( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	pAlmodesEditPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     pAlmodesEditPanel->SetBackgroundColour(wxColour(207, 21, 234));
     mainPanelsArray.push_back(pWingsEditPanel);
     mainPanelsArray.push_back(pAlmodesEditPanel);
     for(auto it = mainPanelsArray.begin(); it != mainPanelsArray.end(); ++it){
-        pMainSizer->Add((*it), 1, wxEXPAND, 5);
+        pMainSizer->Add(*it, 1, wxEXPAND, 5);
         (*it)->Hide();
     };
     SetSizer(pMainSizer);
@@ -55,21 +55,25 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "OpenWINGS", wxDefaultPositi
 	Layout();
 }
 
-void MainFrame::SetPanel(MainFrame* parent, wxPanel* panel){
-    for(auto it = parent->mainPanelsArray.begin(); it != parent->mainPanelsArray.end(); ++it){
+void MainFrame::SetPanel(wxPanel* panel){
+    for(auto it = this->mainPanelsArray.begin(); it != this->mainPanelsArray.end(); ++it){
         (*it)->Hide();
     };
-    // TODO fix segfault here
     panel->Show();
-    parent->pMainSizer->Layout();
+    this->pMainSizer->Layout();
 }
 
 void MainFrame::OnNewFile(wxCommandEvent &event){
-    // TODO make this a switch case
-    if(event.GetId() == ID_NEW_WINGS){
-        this->SetPanel(this, this->pWingsEditPanel);
-    }else{
-        this->SetPanel(this, this->pAlmodesEditPanel);
+    // int id = event.GetId();
+    switch(event.GetId()){
+        case ID_NEW_WINGS:
+            this->SetPanel(this->pWingsEditPanel);
+            break;
+        case ID_NEW_ALMODES:
+            this->SetPanel(this->pAlmodesEditPanel);
+            break;
+        default:
+            return;
     }
 }
 

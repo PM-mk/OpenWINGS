@@ -16,7 +16,7 @@ namespace ow{
             wxPanel* pAlmodesEditPanel = nullptr;
             wxBoxSizer* pMainSizer = nullptr;
             std::vector<wxPanel*> mainPanelsArray = {};
-            void SetPanel(MainFrame* parent, wxPanel* panel);
+            void SetPanel(wxPanel* panel);
         // handlers:
             void OnNewFile(wxCommandEvent& event);
             void OnOpen(wxCommandEvent& event);
