@@ -1,5 +1,7 @@
 #include "MainFrame.hpp"
 #include "AboutFrame.hpp"
+#include "OpenWingsApp.hpp"
+
 using namespace ow;
 
 enum eventID{
@@ -82,32 +84,32 @@ void MainFrame::OnNewFile(wxCommandEvent &event){
 void MainFrame::OnOpen(wxCommandEvent &event){
     wxString fileName = wxLoadFileSelector(wxT("a project"), "XML", wxEmptyString, this);
 	if(!fileName.empty()){
-        pFile = new wxTextFile(fileName);
-        if(pFile->Exists()){
-            // TODO: implement XML handling
-            // SetStatusText(fileName);
-            // pFile->Close();
+            tinyxml2::XMLError loadResult = this->projectFile.LoadFile(fileName);
+        if(loadResult == tinyxml2::XML_SUCCESS){
+            tinyxml2::XMLElement* root = this->projectFile.RootElement();
+            SetStatusText(wxString::Format(wxT("%s - %s"), fileName, root->Attribute("type")));
+            // TODO: further work mode handling here
             this->EnableSaving(true);
         }else{
-            wxMessageDialog errDlg = wxMessageDialog(this, wxT("Couldn't load file"), wxT("Error"));
-            errDlg.ShowModal();
+            OWApp::ErrMsg(this, wxString::Format(wxT("Could not open file.\n\n%s"),
+                this->projectFile.ErrorIDToName(loadResult)));
         }
     }
 }
 
 void MainFrame::EnableSaving(bool enable){
-    if(this->pFile){
+    if(this->projectFile.ChildElementCount()){
         this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVE, enable);
     }
     this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVEAS, enable);
 }
 
 void MainFrame::OnSave(wxCommandEvent &event){
-    1;
+    OWApp::ErrMsg(this, "Not yet implemented :(");
 }
 
 void MainFrame::OnSaveAs(wxCommandEvent &event){
-    1;
+    OWApp::ErrMsg(this, "Not yet implemented :(");
 }
 
 void MainFrame::OnAbout(wxCommandEvent &event){

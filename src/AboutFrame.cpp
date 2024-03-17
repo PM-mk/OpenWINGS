@@ -2,8 +2,8 @@
 #include <wx/hyperlink.h>
 using namespace ow;
 
-ow::AboutFrame::AboutFrame(wxWindow* parent) :
-        wxDialog(parent, wxID_ABOUT, "About", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE)
+AboutFrame::AboutFrame(wxWindow* parent) :
+    wxDialog(parent, wxID_ABOUT, "About", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE)
 {
     wxBoxSizer* pSizerMain = new wxBoxSizer(wxVERTICAL);
 
@@ -32,6 +32,7 @@ ow::AboutFrame::AboutFrame(wxWindow* parent) :
     pSizerSub->Add(pWxText, 1, wxALL, 5);
 	pSizerSub->Add(pLinkWx, 0, wxALL, 5 );
 	pSizerMain->Add(pSizerSub, 1, wxEXPAND, 5);
+    // TODO: add TinyXML-2 credits
 
 	this->SetSizer(pSizerMain);
 	this->Layout();

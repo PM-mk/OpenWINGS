@@ -5,6 +5,7 @@
 #endif // WX_PRECOMP
 #include <wx/dynarray.h>
 #include <wx/textfile.h>
+#include "tinyxml2.h"
 
 namespace ow{
     class MainFrame : public wxFrame{
@@ -12,10 +13,10 @@ namespace ow{
             MainFrame();
         protected:
         private:
-            wxTextFile* pFile = nullptr;
             wxPanel* pWingsEditPanel = nullptr;
             wxPanel* pAlmodesEditPanel = nullptr;
             wxBoxSizer* pMainSizer = nullptr;
+            tinyxml2::XMLDocument projectFile;
             std::vector<wxPanel*> mainPanelsArray = {};
             void SetPanel(wxPanel* panel);
             void EnableSaving(bool enable);
