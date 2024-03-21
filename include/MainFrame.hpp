@@ -3,8 +3,6 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif // WX_PRECOMP
-#include <wx/dynarray.h>
-#include <wx/textfile.h>
 #include "tinyxml2.h"
 
 namespace ow{
@@ -13,13 +11,11 @@ namespace ow{
             MainFrame();
         protected:
         private:
-            wxPanel* pWingsEditPanel = nullptr;
-            wxPanel* pAlmodesEditPanel = nullptr;
-            wxBoxSizer* pMainSizer = nullptr;
+            std::unordered_map<std::string, wxPanel*> panelMap;
             tinyxml2::XMLDocument projectFile;
-            std::vector<wxPanel*> mainPanelsArray = {};
-            void SetPanel(wxPanel* panel);
+            void SetPanel(std::string key);
             void EnableSaving(bool enable);
+            bool IsFileLoaded();
         // handlers:
             void OnNewFile(wxCommandEvent& event);
             void OnOpen(wxCommandEvent& event);

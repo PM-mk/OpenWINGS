@@ -14,3 +14,7 @@ void OWApp::ErrMsg(wxFrame* frame, const wxString& msg){
     errDlg.ShowModal();
 }
 
+bool OWApp::Ask(wxFrame* frame, const wxString& msg){
+    wxMessageDialog askDlg = wxMessageDialog(frame, msg, wxT("Confirmation"), wxYES_NO);
+    return (askDlg.ShowModal() == wxID_YES) ? true : false;
+}

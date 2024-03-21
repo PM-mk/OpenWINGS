@@ -9,6 +9,7 @@ namespace ow{
         public:
             bool OnInit() override;
             static void ErrMsg(wxFrame* frame, const wxString& msg = "Undefined error");
+            static bool Ask(wxFrame* frame, const wxString& msg);
        protected:
         private:
     };

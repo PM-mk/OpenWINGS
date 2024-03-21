@@ -31,16 +31,14 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pMenuBar->Append(pHelpMenu, wxT("&Help"));
     SetMenuBar(pMenuBar);
     // panels
-	pMainSizer = new wxBoxSizer(wxVERTICAL);
-	pWingsEditPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    pWingsEditPanel->SetBackgroundColour(wxColour(128, 255, 0));
-	pAlmodesEditPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    pAlmodesEditPanel->SetBackgroundColour(wxColour(207, 21, 234));
-    mainPanelsArray.push_back(pWingsEditPanel);
-    mainPanelsArray.push_back(pAlmodesEditPanel);
-    for(auto it = mainPanelsArray.begin(); it != mainPanelsArray.end(); ++it){
-        pMainSizer->Add(*it, 1, wxEXPAND, 5);
-        (*it)->Hide();
+	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
+	panelMap["editWINGS"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    panelMap["editWINGS"]->SetBackgroundColour(wxColour(128, 255, 0));
+	panelMap["editALMODES"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    panelMap["editALMODES"]->SetBackgroundColour(wxColour(207, 21, 234));
+    for(const auto& panel : panelMap){
+        pMainSizer->Add(panel.second, 1, wxEXPAND, 5);
+        (panel.second)->Hide();
     };
     SetSizer(pMainSizer);
     // status bar
@@ -59,38 +57,53 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
 	Layout();
 }
 
-void MainFrame::SetPanel(wxPanel* panel){
-    for(auto it = this->mainPanelsArray.begin(); it != this->mainPanelsArray.end(); ++it){
-        (*it)->Hide();
+void MainFrame::SetPanel(std::string key){
+    for(const auto& panel : panelMap){
+        panel.second->Hide();
     };
-    panel->Show();
-    this->pMainSizer->Layout();
+    this->panelMap[key]->Show();
+    this->panelMap[key]->GetContainingSizer()->Layout();
 }
 
 void MainFrame::OnNewFile(wxCommandEvent &event){
-    switch(event.GetId()){
-        case ID_NEW_WINGS:
-            this->SetPanel(this->pWingsEditPanel);
-            break;
-        case ID_NEW_ALMODES:
-            this->SetPanel(this->pAlmodesEditPanel);
-            break;
-        default:
-            return;
+    int eventId = event.GetId();
+    std::string panel = "";
+    if(eventId == ID_NEW_WINGS){
+        panel = "WINGS";
     }
-    this->EnableSaving(true);
+    else if(eventId == ID_NEW_ALMODES){
+        panel = "ALMODES";
+    }
+    else{
+        return;
+    }
+
+    if(!this->IsFileLoaded() || OWApp::Ask(this, "Any unsaved changes will be lost.\nProceed?")){
+        this->SetStatusText(wxString::Format(wxT("Unsaved project - %s"), panel));
+        this->projectFile.Clear();
+        this->SetPanel(panel.insert(0,"edit"));
+        this->EnableSaving(true);
+    }
 }
 
 void MainFrame::OnOpen(wxCommandEvent &event){
     wxString fileName = wxLoadFileSelector(wxT("a project"), "XML", wxEmptyString, this);
 	if(!fileName.empty()){
-            tinyxml2::XMLError loadResult = this->projectFile.LoadFile(fileName);
+        tinyxml2::XMLError loadResult = this->projectFile.LoadFile(fileName);
         if(loadResult == tinyxml2::XML_SUCCESS){
-            tinyxml2::XMLElement* root = this->projectFile.RootElement();
-            SetStatusText(wxString::Format(wxT("%s - %s"), fileName, root->Attribute("type")));
-            // TODO: further work mode handling here
-            this->EnableSaving(true);
-        }else{
+            std::string projectType = this->projectFile.RootElement()->Attribute("type");
+            if(projectType == "WINGS" || projectType == "ALMODES"){
+                SetStatusText(wxString::Format(wxT("%s - %s"), fileName, projectType));
+                // TODO: further work mode handling here, load data into controls
+                this->SetPanel(projectType.insert(0,"edit"));
+                this->EnableSaving(true);
+            }
+            else{
+                OWApp::ErrMsg(this, wxString::Format(wxT("Unrecognized project type: \"%s\""),
+                    projectType));
+            }
+        }
+        else{
             OWApp::ErrMsg(this, wxString::Format(wxT("Could not open file.\n\n%s"),
                 this->projectFile.ErrorIDToName(loadResult)));
         }
@@ -98,10 +111,17 @@ void MainFrame::OnOpen(wxCommandEvent &event){
 }
 
 void MainFrame::EnableSaving(bool enable){
-    if(this->projectFile.ChildElementCount()){
+    if(this->IsFileLoaded()){
         this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVE, enable);
     }
+    else{
+        this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVE, false);
+    }
     this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVEAS, enable);
+}
+
+bool MainFrame::IsFileLoaded(){
+    return !this->projectFile.NoChildren();
 }
 
 void MainFrame::OnSave(wxCommandEvent &event){
@@ -118,5 +138,7 @@ void MainFrame::OnAbout(wxCommandEvent &event){
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event){
-    Close(true);
+    if(!this->IsFileLoaded() || OWApp::Ask(this, "Any unsaved changes will be lost.\nAre you sure you want to exit?")){
+        Close(true);
+    }
 }
