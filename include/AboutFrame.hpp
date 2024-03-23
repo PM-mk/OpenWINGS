@@ -6,6 +6,7 @@
 #include <wx/hyperlink.h>
 #include <wx/statline.h>
 #include <tinyxml2.h>
+#include "ow_logo.xpm"
 
 namespace ow{
     class AboutFrame : public wxDialog{
