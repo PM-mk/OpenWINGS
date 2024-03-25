@@ -14,12 +14,12 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     pAboutText->Wrap(-1);
     wxHyperlinkCtrl* pLinkGithub = new wxHyperlinkCtrl(this, wxID_ANY, "github.com/PM-mk/OpenWINGS",
         wxT("https://github.com/PM-mk/OpenWINGS"), wxDefaultPosition, wxDefaultSize);
-	wxStaticLine* pStaticLine = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
+    wxStaticLine* pStaticLine = new wxStaticLine(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
     pSizerMain->Add(pAboutText, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 5);
     wxStaticBitmap* ow_logo = new wxStaticBitmap(this, wxID_ANY, wxBitmap(ow_logo_xpm), wxDefaultPosition, wxDefaultSize, 0);
     pSizerMain->Add(ow_logo, 0, wxALIGN_CENTER_HORIZONTAL, 5);
     pSizerMain->Add(pLinkGithub, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
-	pSizerMain->Add(pStaticLine, 0, wxALL|wxEXPAND, 5);
+    pSizerMain->Add(pStaticLine, 0, wxALL|wxEXPAND, 5);
 
     // wxWidgets credits
     wxBoxSizer* pSizerWxCredit = new wxBoxSizer(wxVERTICAL);
@@ -29,7 +29,7 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     wxHyperlinkCtrl* pLinkWx = new wxHyperlinkCtrl(this, wxID_ANY, "wxwidgets.org",
         wxT("https://www.wxwidgets.org"), wxDefaultPosition, wxDefaultSize);
     pSizerWxCredit->Add(pWxText, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
-	pSizerWxCredit->Add(pLinkWx, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+    pSizerWxCredit->Add(pLinkWx, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
     // TinyXML-2 credits
     wxBoxSizer* pSizerXmlCredit = new wxBoxSizer(wxVERTICAL);
@@ -40,14 +40,14 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     wxHyperlinkCtrl* pLinkXml = new wxHyperlinkCtrl(this, wxID_ANY, "github.com/leethomason/tinyxml2",
         wxT("https://github.com/leethomason/tinyxml2"), wxDefaultPosition, wxDefaultSize);
     pSizerXmlCredit->Add(pXmlText, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
-	pSizerXmlCredit->Add(pLinkXml, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+    pSizerXmlCredit->Add(pLinkXml, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
     // finish frame
     pAboutText->SetFocus(); // set focus on wxStaticText control to prevent focus frame from showing
-	pSizerMain->Add(pSizerWxCredit, 0, wxEXPAND, 5);
-	pSizerMain->Add(pSizerXmlCredit, 0, wxEXPAND, 5);
-	this->SetSizer(pSizerMain);
-	this->Layout();
+    pSizerMain->Add(pSizerWxCredit, 0, wxEXPAND, 5);
+    pSizerMain->Add(pSizerXmlCredit, 0, wxEXPAND, 5);
+    this->SetSizer(pSizerMain);
+    this->Layout();
     this->Fit();
-	this->Centre(wxBOTH);
+    this->Centre(wxBOTH);
 }

@@ -1,13 +1,5 @@
 #include "MainFrame.hpp"
-#include "AboutFrame.hpp"
-#include "OpenWingsApp.hpp"
-
 using namespace ow;
-
-enum eventID{
-    ID_NEW_WINGS = wxID_HIGHEST+1,
-    ID_NEW_ALMODES
-};
 
 MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultPosition, wxSize(1366,768)){
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
@@ -31,15 +23,28 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pMenuBar->Append(pHelpMenu, wxT("&Help"));
     SetMenuBar(pMenuBar);
     // panels
-	wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
-	panelMap["editWINGS"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    panelMap["editWINGS"]->SetBackgroundColour(wxColour(128, 255, 0));
-	panelMap["editALMODES"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
+    // panels - start
+    panelMap["start"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    // move this to base class
+    wxBoxSizer* pStartSizer = new wxBoxSizer(wxVERTICAL);
+    panelMap["start"]->SetSizer(pStartSizer);
+    panelMap["start"]->Layout();
+    pStartSizer->Fit(panelMap["start"]);
+
+    wxStaticText* pStartTxt = new wxStaticText(panelMap["start"], wxID_ANY, wxT("Start"),
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    pStartSizer->Add(pStartTxt, 1, wxEXPAND, 5);
+    // panels
+    ScalePanel* pScalePanel = new ScalePanel(this);
+    panelMap["editWINGS"] = pScalePanel;
+    panelMap["editALMODES"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     panelMap["editALMODES"]->SetBackgroundColour(wxColour(207, 21, 234));
     for(const auto& panel : panelMap){
         pMainSizer->Add(panel.second, 1, wxEXPAND, 5);
         (panel.second)->Hide();
     };
+    panelMap["start"]->Show();
     SetSizer(pMainSizer);
     // status bar
     CreateStatusBar(2);
@@ -54,7 +59,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     Bind(wxEVT_MENU, &MainFrame::OnQuit, this, wxID_EXIT);
     // finish frame
     CentreOnScreen(wxBOTH);
-	Layout();
+    Layout();
 }
 
 void MainFrame::SetPanel(std::string key){
@@ -78,7 +83,7 @@ void MainFrame::OnNewFile(wxCommandEvent &event){
         return;
     }
 
-    if(!this->IsFileLoaded() || OWApp::Ask(this, "Any unsaved changes will be lost.\nProceed?")){
+    if(!this->IsFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nProceed?")){
         this->SetStatusText(wxString::Format(wxT("Unsaved project - %s"), panel));
         this->projectFile.Clear();
         this->SetPanel(panel.insert(0,"edit"));
@@ -88,7 +93,7 @@ void MainFrame::OnNewFile(wxCommandEvent &event){
 
 void MainFrame::OnOpen(wxCommandEvent &event){
     wxString fileName = wxLoadFileSelector(wxT("a project"), "XML", wxEmptyString, this);
-	if(!fileName.empty()){
+    if(!fileName.empty()){
         tinyxml2::XMLError loadResult = this->projectFile.LoadFile(fileName);
         if(loadResult == tinyxml2::XML_SUCCESS){
             std::string projectType = this->projectFile.RootElement()->Attribute("type");
@@ -99,12 +104,12 @@ void MainFrame::OnOpen(wxCommandEvent &event){
                 this->EnableSaving(true);
             }
             else{
-                OWApp::ErrMsg(this, wxString::Format(wxT("Unrecognized project type: \"%s\""),
+                ErrMsg(this, wxString::Format(wxT("Unrecognized project type: \"%s\""),
                     projectType));
             }
         }
         else{
-            OWApp::ErrMsg(this, wxString::Format(wxT("Could not open file.\n\n%s"),
+            ErrMsg(this, wxString::Format(wxT("Could not open file.\n\n%s"),
                 this->projectFile.ErrorIDToName(loadResult)));
         }
     }
@@ -125,11 +130,11 @@ bool MainFrame::IsFileLoaded(){
 }
 
 void MainFrame::OnSave(wxCommandEvent &event){
-    OWApp::ErrMsg(this, "Not yet implemented :(");
+    ErrMsg(this, "Not yet implemented :(");
 }
 
 void MainFrame::OnSaveAs(wxCommandEvent &event){
-    OWApp::ErrMsg(this, "Not yet implemented :(");
+    ErrMsg(this, "Not yet implemented :(");
 }
 
 void MainFrame::OnAbout(wxCommandEvent &event){
@@ -138,7 +143,7 @@ void MainFrame::OnAbout(wxCommandEvent &event){
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event){
-    if(!this->IsFileLoaded() || OWApp::Ask(this, "Any unsaved changes will be lost.\nAre you sure you want to exit?")){
+    if(!this->IsFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nAre you sure you want to exit?")){
         Close(true);
     }
 }

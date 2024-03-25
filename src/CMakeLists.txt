@@ -5,4 +5,6 @@ target_sources(${PROJECT_NAME}
         MainFrame.cpp
         AboutFrame.cpp
         tinyxml2.cpp
+        scalePanel.cpp
+        helper.cpp
 )

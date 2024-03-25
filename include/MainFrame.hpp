@@ -4,6 +4,10 @@
     #include <wx/wx.h>
 #endif // WX_PRECOMP
 #include "tinyxml2.h"
+#include "AboutFrame.hpp"
+#include "OpenWingsApp.hpp"
+#include "ScalePanel.hpp"
+#include "helper.hpp"
 
 namespace ow{
     class MainFrame : public wxFrame{
