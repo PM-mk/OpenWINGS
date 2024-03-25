@@ -8,8 +8,6 @@ namespace ow{
     class OWApp : public wxApp{
         public:
             bool OnInit() override;
-            static void ErrMsg(wxFrame* frame, const wxString& msg = "Undefined error");
-            static bool Ask(wxFrame* frame, const wxString& msg);
        protected:
         private:
     };
