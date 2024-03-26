@@ -36,7 +36,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
     pStartSizer->Add(pStartTxt, 1, wxEXPAND, 5);
     // panels
-    ScalePanel* pScalePanel = new ScalePanel(this);
+    ScaleMainPanel* pScalePanel = new ScaleMainPanel(this);
     panelMap["editWINGS"] = pScalePanel;
     panelMap["editALMODES"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     panelMap["editALMODES"]->SetBackgroundColour(wxColour(207, 21, 234));

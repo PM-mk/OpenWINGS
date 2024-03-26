@@ -8,7 +8,7 @@ namespace ow{
     enum eventID{
         ID_NEW_WINGS = wxID_HIGHEST+1,
         ID_NEW_ALMODES,
-        ID_SET_SCALE
+        ID_SET_DEFAULT
     };
 
     void ErrMsg(wxFrame* frame, const wxString& msg);
