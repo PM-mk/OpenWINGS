@@ -11,7 +11,7 @@
 namespace ow{
     class ScalePanel : public wxPanel{
         public:
-            ScalePanel(wxWindow* parent);
+            ScalePanel(wxWindow* parent, const wxString& title);
             short value = 0;
             wxString Name = wxEmptyString;
         protected:

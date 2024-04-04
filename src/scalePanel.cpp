@@ -1,8 +1,13 @@
 #include "ScalePanel.hpp"
 using namespace ow;
 
-ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL){
+ScalePanel::ScalePanel(wxWindow* parent, const wxString& title) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL){
     wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
+
+    wxStaticText* pTitle = new wxStaticText(this, wxID_ANY, title,
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    pTitle->Wrap(-1);
+   pMainSizer->Add(pTitle, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 5);
 
     wxBoxSizer* pScaleEditSizer;
     pScaleEditSizer = new wxBoxSizer(wxHORIZONTAL);

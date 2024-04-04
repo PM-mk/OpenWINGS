@@ -6,6 +6,8 @@ target_sources(${PROJECT_NAME}
         AboutFrame.cpp
         tinyxml2.cpp
         ScalePanel.cpp
-        ScaleMainPanel.cpp
+        ControlPanel.cpp
+        ElementPanel.cpp
+        ScaleDialog.cpp
         helper.cpp
 )

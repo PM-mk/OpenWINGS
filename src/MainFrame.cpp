@@ -26,18 +26,20 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
     // panels - start
     panelMap["start"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+
     // move this to base class
     wxBoxSizer* pStartSizer = new wxBoxSizer(wxVERTICAL);
     panelMap["start"]->SetSizer(pStartSizer);
     panelMap["start"]->Layout();
     pStartSizer->Fit(panelMap["start"]);
-
     wxStaticText* pStartTxt = new wxStaticText(panelMap["start"], wxID_ANY, wxT("Start"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
     pStartSizer->Add(pStartTxt, 1, wxEXPAND, 5);
+    // move this to base class
+
     // panels
-    ScaleMainPanel* pScalePanel = new ScaleMainPanel(this);
-    panelMap["editWINGS"] = pScalePanel;
+    ControlPanel* pControlPanel = new ControlPanel(this);
+    panelMap["editWINGS"] = pControlPanel;
     panelMap["editALMODES"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     panelMap["editALMODES"]->SetBackgroundColour(wxColour(207, 21, 234));
     for(const auto& panel : panelMap){

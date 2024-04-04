@@ -6,7 +6,7 @@
 #include "tinyxml2.h"
 #include "AboutFrame.hpp"
 #include "OpenWingsApp.hpp"
-#include "ScaleMainPanel.hpp"
+#include "ControlPanel.hpp"
 #include "helper.hpp"
 
 namespace ow{

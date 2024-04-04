@@ -3,15 +3,17 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif // WX_PRECOMP
-#include <wx/statline.h>
-#include "ScalePanel.hpp"
+#include "wx/splitter.h"
+#include "ElementPanel.hpp"
 
 namespace ow{
-    class ScaleMainPanel : public wxPanel{
+    class ControlPanel : public wxPanel{
         public:
-            ScaleMainPanel(wxWindow* parent);
+            ControlPanel(wxWindow* parent);
         protected:
         private:
         // handlers:
+            void OnIdle(wxIdleEvent& event);
+
     };
 } // namespace ow
