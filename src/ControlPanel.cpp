@@ -11,10 +11,10 @@ ControlPanel::ControlPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	ElementPanel* pSidePanel = new ElementPanel(pSplitter);
 	pSidePanel->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 
-	wxPanel* pMainNotebook = new wxPanel(pSplitter, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-	pMainNotebook->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+	IOPanel* pIOPanel = new IOPanel(pSplitter);
+	pIOPanel->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 
-	pSplitter->SplitVertically(pSidePanel, pMainNotebook, 200);
+	pSplitter->SplitVertically(pSidePanel, pIOPanel, 200);
 	bSizer1->Add(pSplitter, 1, wxEXPAND, 5);
 
 	// send events

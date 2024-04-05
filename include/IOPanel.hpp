@@ -3,18 +3,17 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif // WX_PRECOMP
-#include <wx/splitter.h>
-#include "ElementPanel.hpp"
-#include "IOPanel.hpp"
+#include <wx/notebook.h>
+#include <wx/statline.h>
+#include <wx/listctrl.h>
 
 namespace ow{
-    class ControlPanel : public wxPanel{
+    class IOPanel : public wxPanel{
         public:
-            ControlPanel(wxWindow* parent);
+            IOPanel(wxWindow* parent);
         protected:
         private:
         // handlers:
-            void OnIdle(wxIdleEvent& event);
 
     };
 } // namespace ow

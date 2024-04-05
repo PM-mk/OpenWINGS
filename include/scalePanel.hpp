@@ -4,14 +4,14 @@
     #include <wx/wx.h>
 #endif // WX_PRECOMP
 #include "helper.hpp"
-#include <wx/dataview.h>
+#include <wx/listctrl.h>
 #include <wx/valtext.h>
 #include <wx/valnum.h>
 
 namespace ow{
     class ScalePanel : public wxPanel{
         public:
-            ScalePanel(wxWindow* parent, const wxString& title);
+            ScalePanel(wxWindow* parent);
             short value = 0;
             wxString Name = wxEmptyString;
         protected:

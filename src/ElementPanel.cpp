@@ -51,6 +51,6 @@ ElementPanel::ElementPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 }
 
 void ElementPanel::OnEditScales(wxCommandEvent& event){
-	ScaleDialog* pScaleDialog = new ScaleDialog(this);
+	ScaleDialog* pScaleDialog = new ScaleDialog(NULL);
 	pScaleDialog->ShowModal();
 }

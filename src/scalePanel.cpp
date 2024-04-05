@@ -1,13 +1,8 @@
 #include "ScalePanel.hpp"
 using namespace ow;
 
-ScalePanel::ScalePanel(wxWindow* parent, const wxString& title) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL){
+ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL){
     wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
-
-    wxStaticText* pTitle = new wxStaticText(this, wxID_ANY, title,
-        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
-    pTitle->Wrap(-1);
-   pMainSizer->Add(pTitle, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 5);
 
     wxBoxSizer* pScaleEditSizer;
     pScaleEditSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -30,10 +25,11 @@ ScalePanel::ScalePanel(wxWindow* parent, const wxString& title) : wxPanel(parent
     wxBoxSizer* scaleGridSizer;
     scaleGridSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    wxDataViewListCtrl* pScaleData = new wxDataViewListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDV_VERT_RULES);
-    wxDataViewColumn* pColValue = pScaleData->AppendTextColumn(wxT("Value"), wxDATAVIEW_CELL_INERT, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_SORTABLE);
-    wxDataViewColumn* pColName = pScaleData->AppendTextColumn(wxT("Name"), wxDATAVIEW_CELL_EDITABLE, 170, static_cast<wxAlignment>(wxALIGN_LEFT), 0);
-    scaleGridSizer->Add(pScaleData, 1, wxALL|wxEXPAND, 5);
+    wxListCtrl* pScaleList = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_LIST|wxLC_SORT_DESCENDING);
+	// pScaleList->SetMinSize(wxSize(-1,800));
+    // wxDataViewColumn* pColValue = pScaleData->AppendTextColumn(wxT("Value"), wxDATAVIEW_CELL_INERT, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_SORTABLE);
+    // wxDataViewColumn* pColName = pScaleData->AppendTextColumn(wxT("Name"), wxDATAVIEW_CELL_EDITABLE, 170, static_cast<wxAlignment>(wxALIGN_LEFT), 0);
+    scaleGridSizer->Add(pScaleList, 1, wxALL|wxEXPAND, 5);
 
     wxButton* pBtnScaleDelete = new wxButton(this, wxID_DELETE, wxT("Delete"), wxDefaultPosition, wxDefaultSize, 0);
     scaleGridSizer->Add(pBtnScaleDelete, 0, wxALL, 5);

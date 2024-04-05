@@ -2,16 +2,19 @@
 using namespace ow;
 
 ScaleDialog::ScaleDialog(wxWindow* parent) :
-    wxDialog(parent, wxID_ANY, "Scale Editor", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE){
+    wxDialog(parent, wxID_ANY, "Scale Editor", wxDefaultPosition, wxSize(-1, 300), wxDEFAULT_DIALOG_STYLE){
 
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 	wxBoxSizer* bSizer5;
 	bSizer5 = new wxBoxSizer(wxVERTICAL);
 
 	wxNotebook* pEditNotebook = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
-	ScalePanel* pWeightEditPanel = new ScalePanel(pEditNotebook, wxT("Delete this"));
 
+	ScalePanel* pWeightEditPanel = new ScalePanel(pEditNotebook);
 	pEditNotebook->AddPage(pWeightEditPanel, wxT("Weight"), false);
+
+	ScalePanel* pInfluenceEditPanel = new ScalePanel(pEditNotebook);
+	pEditNotebook->AddPage(pInfluenceEditPanel, wxT("Influence"), false);
 
 	bSizer5->Add(pEditNotebook, 1, wxEXPAND | wxALL, 5);
 

@@ -8,6 +8,7 @@ target_sources(${PROJECT_NAME}
         ScalePanel.cpp
         ControlPanel.cpp
         ElementPanel.cpp
+        IOPanel.cpp
         ScaleDialog.cpp
         helper.cpp
 )
