@@ -11,6 +11,7 @@ namespace ow{
     class ElementPanel : public wxPanel{
         public:
             ElementPanel(wxWindow* parent);
+            wxListCtrl* pElementList;
         protected:
         private:
         // handlers:

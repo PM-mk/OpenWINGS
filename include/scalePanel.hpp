@@ -13,7 +13,7 @@ namespace ow{
         public:
             ScalePanel(wxWindow* parent);
             short value = 0;
-            wxString Name = wxEmptyString;
+            wxListCtrl* pScaleList;
         protected:
         private:
         // handlers:

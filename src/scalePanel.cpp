@@ -25,10 +25,9 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
     wxBoxSizer* scaleGridSizer;
     scaleGridSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    wxListCtrl* pScaleList = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_LIST|wxLC_SORT_DESCENDING);
-	// pScaleList->SetMinSize(wxSize(-1,800));
-    // wxDataViewColumn* pColValue = pScaleData->AppendTextColumn(wxT("Value"), wxDATAVIEW_CELL_INERT, 50, static_cast<wxAlignment>(wxALIGN_LEFT), wxDATAVIEW_COL_SORTABLE);
-    // wxDataViewColumn* pColName = pScaleData->AppendTextColumn(wxT("Name"), wxDATAVIEW_CELL_EDITABLE, 170, static_cast<wxAlignment>(wxALIGN_LEFT), 0);
+    pScaleList = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_DESCENDING);
+	pScaleList->InsertColumn(0, "Value", 0, 50);
+	pScaleList->InsertColumn(1, "Name", 0, 227);
     scaleGridSizer->Add(pScaleList, 1, wxALL|wxEXPAND, 5);
 
     wxButton* pBtnScaleDelete = new wxButton(this, wxID_DELETE, wxT("Delete"), wxDefaultPosition, wxDefaultSize, 0);

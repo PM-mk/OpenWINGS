@@ -11,3 +11,8 @@ bool ow::Ask(wxFrame* frame, const wxString& msg){
     return (askDlg.ShowModal() == wxID_YES) ? true : false;
 }
 
+void ow::UpdateList(wxListCtrl* list){
+}
+
+void ow::UpdateCombo(wxComboBox *combo){
+}

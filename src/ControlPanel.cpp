@@ -8,10 +8,10 @@ ControlPanel::ControlPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	wxSplitterWindow* pSplitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_BORDER|wxSP_LIVE_UPDATE);
 	pSplitter->SetMinimumPaneSize(200);
 
-	ElementPanel* pSidePanel = new ElementPanel(pSplitter);
+	pSidePanel = new ElementPanel(pSplitter);
 	pSidePanel->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 
-	IOPanel* pIOPanel = new IOPanel(pSplitter);
+	pIOPanel = new IOPanel(pSplitter);
 	pIOPanel->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 
 	pSplitter->SplitVertically(pSidePanel, pIOPanel, 200);

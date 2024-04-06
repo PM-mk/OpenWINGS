@@ -1,6 +1,17 @@
 #include "MainFrame.hpp"
 using namespace ow;
 
+std::map<int, wxString> defaultScale = {
+    {0, wxT("None")},
+    {1, wxT("Low")},
+    {2, wxT("Medium")},
+    {3, wxT("High")},
+    {4, wxT("Very high")},
+};
+std::map<int, wxString> userWeights = {};
+std::map<int, wxString> userInfluences = {};
+std::multimap<wxString, wxString> elementMap = {};
+
 MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultPosition, wxSize(1366,768)){
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
     // menus
@@ -38,7 +49,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     // move this to base class
 
     // panels
-    ControlPanel* pControlPanel = new ControlPanel(this);
+    pControlPanel = new ControlPanel(this);
     panelMap["editWINGS"] = pControlPanel;
     panelMap["editALMODES"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     panelMap["editALMODES"]->SetBackgroundColour(wxColour(207, 21, 234));

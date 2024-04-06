@@ -11,6 +11,8 @@ namespace ow{
     class ControlPanel : public wxPanel{
         public:
             ControlPanel(wxWindow* parent);
+            ElementPanel* pSidePanel;
+            IOPanel* pIOPanel;
         protected:
         private:
         // handlers:
