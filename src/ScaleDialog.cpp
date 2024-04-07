@@ -38,7 +38,7 @@ ScaleDialog::ScaleDialog(wxWindow* parent) :
 }
 
 void ScaleDialog::OnOK(wxCommandEvent& event){
-	// do stuff
+	// send event to controlpanel->maincontrol->combo1 and combo2
 	this->EndModal(wxID_OK);
 }
 

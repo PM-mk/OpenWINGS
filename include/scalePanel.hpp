@@ -20,6 +20,5 @@ namespace ow{
             void OnAdd(wxCommandEvent& event);
             void OnDelete(wxCommandEvent& event);
             void OnClear(wxCommandEvent& event);
-            void OnSetDefault(wxCommandEvent& event);
     };
 } // namespace ow

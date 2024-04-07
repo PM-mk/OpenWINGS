@@ -28,6 +28,16 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
     pScaleList = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_DESCENDING);
 	pScaleList->InsertColumn(0, "Value", 0, 50);
 	pScaleList->InsertColumn(1, "Name", 0, 227);
+    long ndx = pScaleList->InsertItem(0, "0");
+    pScaleList->SetItem(ndx, 1, "NONE");
+    ndx = pScaleList->InsertItem(1, "1");
+    pScaleList->SetItem(ndx, 1, "LOW");
+    ndx = pScaleList->InsertItem(2, "2");
+    pScaleList->SetItem(ndx, 1, "MEDIUM");
+    ndx = pScaleList->InsertItem(3, "3");
+    pScaleList->SetItem(ndx, 1, "HIGH");
+    ndx = pScaleList->InsertItem(4, "4");
+    pScaleList->SetItem(ndx, 1, "VERY HIGH");
     scaleGridSizer->Add(pScaleList, 1, wxALL|wxEXPAND, 5);
 
     wxButton* pBtnScaleDelete = new wxButton(this, wxID_DELETE, wxT("Delete"), wxDefaultPosition, wxDefaultSize, 0);
@@ -38,9 +48,6 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
 
     wxBoxSizer* pBottomBtnSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    wxButton* pBtnScaleDefault = new wxButton(this, ID_SET_DEFAULT, wxT("Reset to default"), wxDefaultPosition, wxDefaultSize, 0);
-    pBottomBtnSizer->Add(pBtnScaleDefault, 0, wxALL, 5);
-
     wxButton* pBtnScaleClear = new wxButton(this, wxID_CLEAR, wxT("Clear"), wxDefaultPosition, wxDefaultSize, 0);
     pBottomBtnSizer->Add(pBtnScaleClear, 0, wxALL, 5);
     pMainSizer->Add(pBottomBtnSizer, 0, wxEXPAND, 5);
@@ -48,7 +55,6 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
     Bind(wxEVT_BUTTON, &ScalePanel::OnAdd, this, wxID_ADD);
     Bind(wxEVT_BUTTON, &ScalePanel::OnDelete, this, wxID_DELETE);
     Bind(wxEVT_BUTTON, &ScalePanel::OnClear, this, wxID_CLEAR);
-    Bind(wxEVT_BUTTON, &ScalePanel::OnSetDefault, this, ID_SET_DEFAULT);
     // finish frame
     this->SetSizer(pMainSizer);
     this->Layout();
@@ -61,7 +67,5 @@ void ow::ScalePanel::OnDelete(wxCommandEvent &event){
 }
 
 void ow::ScalePanel::OnClear(wxCommandEvent &event){
-}
-
-void ow::ScalePanel::OnSetDefault(wxCommandEvent &event){
+    this->pScaleList->DeleteAllItems();
 }
