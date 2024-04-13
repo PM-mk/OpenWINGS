@@ -17,6 +17,18 @@ ControlPanel::ControlPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	pSplitter->SplitVertically(pSidePanel, pIOPanel, 200);
 	bSizer1->Add(pSplitter, 1, wxEXPAND, 5);
 
+	// set up memory objects
+	std::map<int, wxString> defaultScale = {
+		{0, wxT("None")},
+		{1, wxT("Low")},
+		{2, wxT("Medium")},
+		{3, wxT("High")},
+		{4, wxT("Very high")},
+	};
+	weightsMap = defaultScale;
+	influencesMap = defaultScale;
+	elementMap = {};
+
 	// send events
     Bind(wxEVT_IDLE, &ControlPanel::OnIdle, this, wxID_ANY);
 

@@ -3,6 +3,7 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif // WX_PRECOMP
+#include <map>
 #include "helper.hpp"
 #include <wx/listctrl.h>
 #include <wx/valtext.h>
@@ -14,6 +15,7 @@ namespace ow{
             ScalePanel(wxWindow* parent);
             short value = 0;
             wxListCtrl* pScaleList;
+            void Update(std::map<int, wxString> map);
         protected:
         private:
         // handlers:

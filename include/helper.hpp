@@ -4,7 +4,6 @@
     #include <wx/wx.h>
 #endif // WX_PRECOMP
 #include <wx/listctrl.h>
-#include <map>
 
 namespace ow{
     enum eventID{

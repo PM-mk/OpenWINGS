@@ -2,7 +2,7 @@
 using namespace ow;
 
 ScaleDialog::ScaleDialog(wxWindow* parent) :
-    wxDialog(parent, wxID_ANY, "Scale Editor", wxDefaultPosition, wxSize(-1, 300), wxDEFAULT_DIALOG_STYLE){
+    wxDialog(parent, wxID_EDIT, "Scale Editor", wxDefaultPosition, wxSize(-1, 300), wxDEFAULT_DIALOG_STYLE){
 
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
 	wxBoxSizer* bSizer5;
@@ -10,10 +10,10 @@ ScaleDialog::ScaleDialog(wxWindow* parent) :
 
 	wxNotebook* pEditNotebook = new wxNotebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0);
 
-	ScalePanel* pWeightEditPanel = new ScalePanel(pEditNotebook);
+	pWeightEditPanel = new ScalePanel(pEditNotebook);
 	pEditNotebook->AddPage(pWeightEditPanel, wxT("Weight"), false);
 
-	ScalePanel* pInfluenceEditPanel = new ScalePanel(pEditNotebook);
+	pInfluenceEditPanel = new ScalePanel(pEditNotebook);
 	pEditNotebook->AddPage(pInfluenceEditPanel, wxT("Influence"), false);
 
 	bSizer5->Add(pEditNotebook, 1, wxEXPAND | wxALL, 5);
@@ -27,21 +27,24 @@ ScaleDialog::ScaleDialog(wxWindow* parent) :
 
 	bSizer5->Add(m_sdbSizer1, 0, wxALL|wxEXPAND, 5);
 
-    Bind(wxEVT_BUTTON, &ScaleDialog::OnOK, this, wxID_OK);
-    Bind(wxEVT_BUTTON, &ScaleDialog::OnCancel, this, wxID_CANCEL);
+    Bind(wxEVT_BUTTON, &ScaleDialog::OnClose, this, wxID_OK);
+    Bind(wxEVT_BUTTON, &ScaleDialog::OnClose, this, wxID_CANCEL);
 
 	this->SetSizer(bSizer5);
 	this->Layout();
-
-	this->Centre(wxBOTH);
-
+	this->CenterOnParent(wxBOTH);
 }
 
-void ScaleDialog::OnOK(wxCommandEvent& event){
-	// send event to controlpanel->maincontrol->combo1 and combo2
+void ow::ScaleDialog::LoadScales(){
+	this->pWeightEditPanel->Update(dynamic_cast<ControlPanel*>(this->GetParent())->weightsMap);
+	this->pInfluenceEditPanel->Update(dynamic_cast<ControlPanel*>(this->GetParent())->influencesMap);
+}
+
+void ScaleDialog::OnClose(wxCommandEvent& event){
+	if (event.GetId() == wxID_OK){
+		// dump list ctrl values into user scale maps
+		// manually fire update events for combo boxes
+		// 		controlpanel->maincontrol->get 1st page of notebook->combo1 and combo2
+	}
 	this->EndModal(wxID_OK);
-}
-
-void ScaleDialog::OnCancel(wxCommandEvent& event){
-	this->EndModal(wxID_CLOSE);
 }

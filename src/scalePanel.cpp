@@ -10,7 +10,6 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
     wxTextCtrl* pTextValue = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,-1), wxTE_RIGHT,
         wxMakeIntegerValidator(&value));
     pTextValue->SetMaxSize(wxSize(50,-1));
-
     pScaleEditSizer->Add(pTextValue, 1, wxALL, 5);
 
     wxTextCtrl* pTextName = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
@@ -27,17 +26,17 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
 
     pScaleList = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_DESCENDING);
 	pScaleList->InsertColumn(0, "Value", 0, 50);
-	pScaleList->InsertColumn(1, "Name", 0, 227);
-    long ndx = pScaleList->InsertItem(0, "0");
-    pScaleList->SetItem(ndx, 1, "NONE");
-    ndx = pScaleList->InsertItem(1, "1");
-    pScaleList->SetItem(ndx, 1, "LOW");
-    ndx = pScaleList->InsertItem(2, "2");
-    pScaleList->SetItem(ndx, 1, "MEDIUM");
-    ndx = pScaleList->InsertItem(3, "3");
-    pScaleList->SetItem(ndx, 1, "HIGH");
-    ndx = pScaleList->InsertItem(4, "4");
-    pScaleList->SetItem(ndx, 1, "VERY HIGH");
+	pScaleList->InsertColumn(1, "Label", 0, 227);
+    // long ndx = pScaleList->InsertItem(0, "0");
+    // pScaleList->SetItem(ndx, 1, "NONE");
+    // ndx = pScaleList->InsertItem(1, "1");
+    // pScaleList->SetItem(ndx, 1, "LOW");
+    // ndx = pScaleList->InsertItem(2, "2");
+    // pScaleList->SetItem(ndx, 1, "MEDIUM");
+    // ndx = pScaleList->InsertItem(3, "3");
+    // pScaleList->SetItem(ndx, 1, "HIGH");
+    // ndx = pScaleList->InsertItem(4, "4");
+    // pScaleList->SetItem(ndx, 1, "VERY HIGH");
     scaleGridSizer->Add(pScaleList, 1, wxALL|wxEXPAND, 5);
 
     wxButton* pBtnScaleDelete = new wxButton(this, wxID_DELETE, wxT("Delete"), wxDefaultPosition, wxDefaultSize, 0);
@@ -58,6 +57,17 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
     // finish frame
     this->SetSizer(pMainSizer);
     this->Layout();
+}
+
+void ScalePanel::Update(std::map<int, wxString> map){
+    long ndx = 0;
+    int recordNumber = 0;
+    wxString scaleValue = "";
+    for(const auto& record : map){
+        scaleValue = wxString::Format(wxT("%i"), record.first);
+        ndx = this->pScaleList->InsertItem(recordNumber++, scaleValue);
+        this->pScaleList->SetItem(ndx, 1, record.second); /*scaleLabel*/
+    };
 }
 
 void ScalePanel::OnAdd(wxCommandEvent& event){

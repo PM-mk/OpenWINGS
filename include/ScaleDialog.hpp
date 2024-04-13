@@ -4,17 +4,21 @@
     #include <wx/wx.h>
 #endif // WX_PRECOMP
 #include <wx/notebook.h>
+#include "ControlPanel.hpp"
+#include "ElementPanel.hpp"
 #include "ScalePanel.hpp"
 
 namespace ow{
     class ScaleDialog : public wxDialog{
         public:
             ScaleDialog(wxWindow* parent);
+            ScalePanel* pWeightEditPanel;
+            ScalePanel* pInfluenceEditPanel;
+            void LoadScales();
+
         protected:
         private:
             // handlers:
-            void OnOK(wxCommandEvent& event);
-            void OnCancel(wxCommandEvent& event);
-
+            void OnClose(wxCommandEvent& event);
     };
 } // namespace ow

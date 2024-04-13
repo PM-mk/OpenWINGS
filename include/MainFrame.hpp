@@ -13,10 +13,6 @@ namespace ow{
     class MainFrame : public wxFrame{
         public:
             MainFrame();
-            static const std::map<int, wxString> defaultScale;
-            static std::map<int, wxString> userWeights;
-            static std::map<int, wxString> userInfluences;
-            static std::multimap<wxString, wxString> elementMap;
             ControlPanel* pControlPanel;
         protected:
         private:

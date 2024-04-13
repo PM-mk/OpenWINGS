@@ -21,7 +21,6 @@ ElementPanel::ElementPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	pElementPanel->Layout();
 	pElementSizer->Fit(pElementPanel);
 	pMainNotebook->AddPage(pElementPanel, wxT("Elements"), true);
-	pScaleDialog = new ScaleDialog(NULL);
 
     // send events
     Bind(wxEVT_BUTTON, &ElementPanel::OnEditScales, this, wxID_EDIT);
@@ -30,13 +29,11 @@ ElementPanel::ElementPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	pMainSizer->Add(pMainNotebook, 1, wxEXPAND | wxALL, 5);
 	this->SetSizer(pMainSizer);
 	this->Layout();
-
-}
-
-ow::ElementPanel::~ElementPanel(){
-	this->pScaleDialog->Destroy();
 }
 
 void ElementPanel::OnEditScales(wxCommandEvent& event){
-	this->pScaleDialog->ShowModal();
+	ScaleDialog* pScaleDialog = new ScaleDialog(this->GetGrandParent());
+	pScaleDialog->LoadScales();
+	// load scales from map here
+	pScaleDialog->ShowModal();
 }
