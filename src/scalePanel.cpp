@@ -24,7 +24,7 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
     wxBoxSizer* scaleGridSizer;
     scaleGridSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    pScaleList = new wxListCtrl(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_DESCENDING);
+    pScaleList = new wxListView(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_DESCENDING);
 	pScaleList->InsertColumn(0, "Value", 0, 50);
 	pScaleList->InsertColumn(1, "Label", 0, 227);
     // long ndx = pScaleList->InsertItem(0, "0");
@@ -59,21 +59,32 @@ ScalePanel::ScalePanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPo
     this->Layout();
 }
 
-void ScalePanel::Update(std::map<int, wxString> map){
+void ScalePanel::Update(const std::map<int, wxString>& map){
     long ndx = 0;
     int recordNumber = 0;
     wxString scaleValue = "";
-    for(const auto& record : map){
-        scaleValue = wxString::Format(wxT("%i"), record.first);
+    for(const auto& pair : map){
+        scaleValue = wxString::Format(wxT("%i"), pair.first);
         ndx = this->pScaleList->InsertItem(recordNumber++, scaleValue);
-        this->pScaleList->SetItem(ndx, 1, record.second); /*scaleLabel*/
+        this->pScaleList->SetItem(ndx, 1, pair.second); /*scaleLabel*/
     };
+}
+
+void ow::ScalePanel::Save(std::map<int, wxString>& map){
+    map.clear();
+    for(auto i = 0; i<this->pScaleList->GetItemCount(); i++){
+        int scaleValue = wxAtoi(GetCellContentsString(this->pScaleList, i, 0));
+        wxString scaleLabel = GetCellContentsString(this->pScaleList, i, 1);
+        map.insert({scaleValue, scaleLabel});
+    }
 }
 
 void ScalePanel::OnAdd(wxCommandEvent& event){
 }
 
 void ow::ScalePanel::OnDelete(wxCommandEvent &event){
+    long itemID = this->pScaleList->GetFirstSelected();
+    this->pScaleList->DeleteItem(itemID);
 }
 
 void ow::ScalePanel::OnClear(wxCommandEvent &event){

@@ -14,8 +14,9 @@ namespace ow{
         public:
             ScalePanel(wxWindow* parent);
             short value = 0;
-            wxListCtrl* pScaleList;
-            void Update(std::map<int, wxString> map);
+            wxListView* pScaleList;
+            void Update(const std::map<int, wxString>& map);
+            void Save(std::map<int, wxString>& map);
         protected:
         private:
         // handlers:

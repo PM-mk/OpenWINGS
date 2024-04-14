@@ -12,7 +12,7 @@ namespace ow{
     class ElementPanel : public wxPanel{
         public:
             ElementPanel(wxWindow* parent);
-            wxListCtrl* pElementList;
+            wxListView* pElementList;
         protected:
         private:
         // handlers:

@@ -16,6 +16,5 @@ namespace ow{
     };
     void ErrMsg(wxFrame* frame, const wxString& msg);
     bool Ask(wxFrame* frame, const wxString& msg);
-    void UpdateList(wxListCtrl* list);
-    void UpdateCombo(wxComboBox* combo);
+    wxString GetCellContentsString(wxListView* list, long row_number, int column);
 } // namespace ow

@@ -9,7 +9,7 @@ ElementPanel::ElementPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	wxPanel* pElementPanel = new wxPanel(pMainNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 	wxBoxSizer* pElementSizer;
 	pElementSizer = new wxBoxSizer(wxVERTICAL);
-	pElementList = new wxListCtrl(pElementPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_ASCENDING);
+	pElementList = new wxListView(pElementPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_ASCENDING);
 	pElementList->InsertColumn(0, wxT("Weight value"), 0, 0);
 	pElementList->InsertColumn(1, wxT("Weight"), 0, 50);
 	pElementList->InsertColumn(2, wxT("Name"), 0, pElementList->GetSize().x-135-50);

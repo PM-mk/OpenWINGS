@@ -10,6 +10,8 @@
 
 namespace ow{
     class ElementPanel;
+    class IOPanel;
+    // REMOVE CIRCURAL DEPENDANCY
     class ControlPanel : public wxPanel{
         public:
             ControlPanel(wxWindow* parent);

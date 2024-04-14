@@ -36,15 +36,20 @@ ScaleDialog::ScaleDialog(wxWindow* parent) :
 }
 
 void ow::ScaleDialog::LoadScales(){
-	this->pWeightEditPanel->Update(dynamic_cast<ControlPanel*>(this->GetParent())->weightsMap);
-	this->pInfluenceEditPanel->Update(dynamic_cast<ControlPanel*>(this->GetParent())->influencesMap);
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetParent());
+	this->pWeightEditPanel->Update(pControl->weightsMap);
+	this->pInfluenceEditPanel->Update(pControl->influencesMap);
 }
 
 void ScaleDialog::OnClose(wxCommandEvent& event){
 	if (event.GetId() == wxID_OK){
-		// dump list ctrl values into user scale maps
-		// manually fire update events for combo boxes
-		// 		controlpanel->maincontrol->get 1st page of notebook->combo1 and combo2
+		ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetParent());
+		// save scale maps to memory
+		this->pWeightEditPanel->Save(pControl->weightsMap);
+		this->pInfluenceEditPanel->Save(pControl->influencesMap);
+		// update combo boxes
+		wxCommandEvent event = wxCommandEvent(wxEVT_BUTTON, ID_UPDATE_ITEMS);
+		wxPostEvent(pControl->pIOPanel, event);
 	}
-	this->EndModal(wxID_OK);
+	this->EndModal(1);
 }
