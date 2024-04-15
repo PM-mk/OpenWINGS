@@ -24,10 +24,10 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pElemLabel2->Wrap(-1);
 	pElemEditSizer->Add(pElemLabel2, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-	wxTextCtrl* pElemNameInput = new wxTextCtrl(pInputPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+	pElemNameInput = new wxTextCtrl(pInputPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
 	pElemEditSizer->Add(pElemNameInput, 1, wxALL, 5);
 
-	wxButton* pBtnAddElement = new wxButton(pInputPanel, wxID_ANY, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0);
+	wxButton* pBtnAddElement = new wxButton(pInputPanel, ID_NEW_ELEMENT, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0);
 	pElemEditSizer->Add(pBtnAddElement, 0, wxALL, 5);
 
 
@@ -54,13 +54,13 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pRelLabel3->Wrap(-1);
 	pRelaEditSizer->Add(pRelLabel3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-	wxListBox* pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
+	pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
 	pRelaEditSizer->Add(pSourceElementsList, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
 	pInfluenceComboBox = new wxComboBox(pInputPanel, wxID_ANY, wxT("Strength..."), wxDefaultPosition, wxDefaultSize, 0, NULL, 0);
 	pRelaEditSizer->Add(pInfluenceComboBox, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-	wxListBox* pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
+	pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
 	pRelaEditSizer->Add(pTargetElementsList, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
 
@@ -100,6 +100,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainSizer->Add(pNotebook, 1, wxEXPAND | wxALL, 5);
 	// send events
     Bind(wxEVT_BUTTON, &IOPanel::OnUpdate, this, ID_UPDATE_ITEMS);
+    Bind(wxEVT_BUTTON, &IOPanel::OnAddElement, this, ID_NEW_ELEMENT);
 
 	this->SetSizer(pMainSizer);
 	this->Layout();
@@ -109,6 +110,14 @@ void IOPanel::OnUpdate(wxCommandEvent &event){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	this->UpdateCombo(this->pWeightComboBox, pControl->weightsMap);
 	this->UpdateCombo(this->pInfluenceComboBox, pControl->influencesMap);
+}
+
+void IOPanel::OnAddElement(wxCommandEvent &event){
+	// pack this into a seperate function:
+	this->pSourceElementsList->Insert(this->pElemNameInput->GetValue(), 0);
+	this->pTargetElementsList->Insert(this->pElemNameInput->GetValue(), 0);
+	wxCommandEvent newEvent = wxCommandEvent(wxEVT_BUTTON, ID_NEW_ELEMENT);
+	wxPostEvent(dynamic_cast<ControlPanel*>(this->GetGrandParent())->pSidePanel, newEvent);
 }
 
 void IOPanel::UpdateCombo(wxComboBox *combo, const std::map<int, wxString> &map){

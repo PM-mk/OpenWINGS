@@ -5,14 +5,14 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
     // menus
     wxMenu* pFileMenu = new wxMenu;
-    pFileMenu->Append(ID_NEW_WINGS, wxT("New &WINGS\tW"), wxT("Create new WINGS project"));
-    pFileMenu->Append(ID_NEW_ALMODES, wxT("New &ALMODES\tA"), wxT("Create new ALMODES project"));
+    pFileMenu->Append(ID_NEW_WINGS, wxT("New &WINGS\tCtrl+W"), wxT("Create new WINGS project"));
+    pFileMenu->Append(ID_NEW_ALMODES, wxT("New &ALMODES\tCtrl+A"), wxT("Create new ALMODES project"));
     pFileMenu->Append(wxID_OPEN, wxT("&Open\tO"), wxT("Open project"));
     pFileMenu->Append(wxID_SEPARATOR);
     pFileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Save current project"));
     pFileMenu->Append(wxID_SAVEAS, wxT("Sa&ve as...\tCtrl+Shift+S"), wxT("Save current project as..."));
     pFileMenu->Append(wxID_SEPARATOR);
-    pFileMenu->Append(wxID_EXIT, wxT("&Quit\tQ"), wxT("Quit this program"));
+    pFileMenu->Append(wxID_EXIT, wxT("&Quit\tCtrl+Q"), wxT("Quit this program"));
     pFileMenu->Enable(wxID_SAVE,false);
     pFileMenu->Enable(wxID_SAVEAS,false);
     wxMenu* pHelpMenu = new wxMenu;

@@ -17,6 +17,7 @@ namespace ow{
         private:
         // handlers:
             void OnEditScales(wxCommandEvent& event);
+            void OnAdd(wxCommandEvent& event);
 
     };
 } // namespace ow

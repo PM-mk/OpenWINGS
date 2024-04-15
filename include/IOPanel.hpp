@@ -16,10 +16,14 @@ namespace ow{
             IOPanel(wxWindow* parent);
             wxComboBox* pWeightComboBox;
             wxComboBox* pInfluenceComboBox;
+            wxTextCtrl* pElemNameInput;
+            wxListBox* pSourceElementsList;
+            wxListBox* pTargetElementsList;
         protected:
         private:
         // handlers:
             void OnUpdate(wxCommandEvent& event);
+            void OnAddElement(wxCommandEvent& event);
             void UpdateCombo(wxComboBox* combo, const std::map<int, wxString>& map);
     };
 } // namespace ow
