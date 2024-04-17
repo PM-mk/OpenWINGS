@@ -63,8 +63,8 @@ void ScalePanel::Update(const std::map<int, wxString>& map){
 void ow::ScalePanel::Save(std::map<int, wxString>& map){
     map.clear();
     for(auto i = 0; i<this->pScaleList->GetItemCount(); i++){
-        int scaleValue = wxAtoi(GetCellContentsString(this->pScaleList, i, 0));
-        wxString scaleLabel = GetCellContentsString(this->pScaleList, i, 1);
+        int scaleValue = wxAtoi(this->pScaleList->GetItemText(i, 0));
+        wxString scaleLabel = this->pScaleList->GetItemText(i, 1);
         map.insert({scaleValue, scaleLabel});
     }
 }

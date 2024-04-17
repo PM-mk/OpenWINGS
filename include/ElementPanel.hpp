@@ -13,6 +13,7 @@ namespace ow{
         public:
             ElementPanel(wxWindow* parent);
             wxListView* pElementList;
+            bool canAddElement(wxString weight, wxString label);
         protected:
         private:
         // handlers:

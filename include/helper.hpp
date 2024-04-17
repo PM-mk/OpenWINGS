@@ -12,9 +12,10 @@ namespace ow{
         ID_SET_DEFAULT,
         ID_NEW_ELEMENT, // for IOPanel
         ID_NEW_RELATION, // for scale editor
-        ID_UPDATE_ITEMS
+        ID_UPDATE_ITEMS,
+        ID_WEIGHT_COMBO,
+        ID_INFLUENCE_COMBO
     };
     void ErrMsg(wxFrame* frame, const wxString& msg);
     bool Ask(wxFrame* frame, const wxString& msg);
-    wxString GetCellContentsString(wxListView* list, long row_number, int column);
 } // namespace ow

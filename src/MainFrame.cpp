@@ -7,7 +7,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     wxMenu* pFileMenu = new wxMenu;
     pFileMenu->Append(ID_NEW_WINGS, wxT("New &WINGS\tCtrl+W"), wxT("Create new WINGS project"));
     pFileMenu->Append(ID_NEW_ALMODES, wxT("New &ALMODES\tCtrl+A"), wxT("Create new ALMODES project"));
-    pFileMenu->Append(wxID_OPEN, wxT("&Open\tO"), wxT("Open project"));
+    pFileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"), wxT("Open project"));
     pFileMenu->Append(wxID_SEPARATOR);
     pFileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Save current project"));
     pFileMenu->Append(wxID_SAVEAS, wxT("Sa&ve as...\tCtrl+Shift+S"), wxT("Save current project as..."));

@@ -19,11 +19,13 @@ namespace ow{
             wxTextCtrl* pElemNameInput;
             wxListBox* pSourceElementsList;
             wxListBox* pTargetElementsList;
+            void AddElement(wxString item);
         protected:
         private:
+            void UpdateCombo(wxComboBox* pCombo, const std::map<int, wxString>& map);
         // handlers:
             void OnUpdate(wxCommandEvent& event);
             void OnAddElement(wxCommandEvent& event);
-            void UpdateCombo(wxComboBox* combo, const std::map<int, wxString>& map);
+            void OnEnterText(wxCommandEvent& event);
     };
 } // namespace ow
