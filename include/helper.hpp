@@ -18,4 +18,5 @@ namespace ow{
     };
     void ErrMsg(wxFrame* frame, const wxString& msg);
     bool Ask(wxFrame* frame, const wxString& msg);
+    long findRecord(wxListView* pList, const int& col, wxString string);
 } // namespace ow

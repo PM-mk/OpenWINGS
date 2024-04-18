@@ -107,7 +107,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	this->Layout();
 }
 
-void IOPanel::AddElement(wxString item){
+void IOPanel::AddElement(const wxString& item){
 	this->pSourceElementsList->Insert(item, 0);
 	this->pTargetElementsList->Insert(item, 0);
 }
@@ -119,10 +119,17 @@ void IOPanel::OnUpdate(wxCommandEvent &event){
 }
 
 void IOPanel::OnAddElement(wxCommandEvent &event){
-	// TODO: if pControl->pSidePanel->canAddElement() then do the following
-	this->AddElement(this->pElemNameInput->GetValue());
-	wxPostEvent(dynamic_cast<ControlPanel*>(this->GetGrandParent())->pSidePanel, event); /* fire OnAdd in ElementPanel*/
-	this->pElemNameInput->SetFocus();
+	wxString elementLabel = this->pElemNameInput->GetValue();
+	wxString weightLabel = this->pWeightComboBox->GetStringSelection();
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	if (this->pWeightComboBox->FindString(weightLabel) != wxNOT_FOUND && pControl->pSidePanel->canAddElement(elementLabel)){
+		this->AddElement(elementLabel);
+		wxPostEvent(pControl->pSidePanel, event); /* fire OnAdd in ElementPanel*/
+		this->pElemNameInput->SetFocus();
+	}
+	else{
+		wxBell();
+	}
 }
 
 void IOPanel::OnEnterText(wxCommandEvent &event){

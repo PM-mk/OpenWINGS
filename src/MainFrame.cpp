@@ -35,7 +35,6 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     wxStaticText* pStartTxt = new wxStaticText(panelMap["start"], wxID_ANY, wxT("Start"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
     pStartSizer->Add(pStartTxt, 1, wxEXPAND, 5);
-    // move this to base class
 
     // panels
     pControlPanel = new ControlPanel(this);

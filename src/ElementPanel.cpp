@@ -31,9 +31,8 @@ ElementPanel::ElementPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	this->Layout();
 }
 
-bool ElementPanel::canAddElement(wxString weight, wxString label){
-	// TODO: iterate over elements, get text and compare with text field value, return true if text not found
-    return false;
+bool ElementPanel::canAddElement(const wxString& label){
+	return ow::findRecord(this->pElementList, 1, label) == -1;
 }
 
 void ElementPanel::OnEditScales(wxCommandEvent& event){
@@ -47,6 +46,4 @@ void ElementPanel::OnAdd(wxCommandEvent &event){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
     long ndx = this->pElementList->InsertItem(0, pControl->pIOPanel->pWeightComboBox->GetValue());
     this->pElementList->SetItem(ndx, 1, pControl->pIOPanel->pElemNameInput->GetValue());
-    // this->pElementList->GetItemText()
-	pControl->pIOPanel->pElemNameInput->Clear();
 }

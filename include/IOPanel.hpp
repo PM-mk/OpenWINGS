@@ -19,7 +19,7 @@ namespace ow{
             wxTextCtrl* pElemNameInput;
             wxListBox* pSourceElementsList;
             wxListBox* pTargetElementsList;
-            void AddElement(wxString item);
+            void AddElement(const wxString& item);
         protected:
         private:
             void UpdateCombo(wxComboBox* pCombo, const std::map<int, wxString>& map);
