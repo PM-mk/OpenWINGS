@@ -40,7 +40,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pRelationSizer = new wxBoxSizer(wxHORIZONTAL);
 
 	wxGridSizer* pRelaEditSizer;
-	pRelaEditSizer = new wxGridSizer(3, 3, 0, 0);
+	pRelaEditSizer = new wxFlexGridSizer(2, 3, 0, 0);
 
 	wxStaticText* pRelLabel1 = new wxStaticText(pInputPanel, wxID_ANY, wxT("System element(s)"), wxDefaultPosition, wxDefaultSize, 0);
 	pRelLabel1->Wrap(-1);
@@ -54,14 +54,14 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pRelLabel3->Wrap(-1);
 	pRelaEditSizer->Add(pRelLabel3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-	pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
-	pRelaEditSizer->Add(pSourceElementsList, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxSize(400,250), 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
+	pRelaEditSizer->Add(pSourceElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
 	pInfluenceComboBox = new wxComboBox(pInputPanel, ID_INFLUENCE_COMBO, wxT("Strength..."), wxDefaultPosition, wxDefaultSize, 0, NULL, wxTE_PROCESS_ENTER);
-	pRelaEditSizer->Add(pInfluenceComboBox, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	pRelaEditSizer->Add(pInfluenceComboBox, 0, wxALIGN_CENTER|wxALL, 5);
 
-	pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
-	pRelaEditSizer->Add(pTargetElementsList, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxSize(400,250), 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
+	pRelaEditSizer->Add(pTargetElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
 
 	pRelationSizer->Add(pRelaEditSizer, 1, wxEXPAND, 5);
