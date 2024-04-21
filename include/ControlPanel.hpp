@@ -11,7 +11,6 @@
 namespace ow{
     class ElementPanel;
     class IOPanel;
-    // REMOVE CIRCURAL DEPENDANCY
     class ControlPanel : public wxPanel{
         public:
             ControlPanel(wxWindow* parent);
@@ -20,6 +19,7 @@ namespace ow{
             std::multimap<wxString, wxString> elementMap;
             ElementPanel* pSidePanel;
             IOPanel* pIOPanel;
+            int scaleStrToInt(const wxString& label, bool mode /*search weights?*/);
         protected:
         private:
         // handlers:

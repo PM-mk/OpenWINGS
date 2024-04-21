@@ -36,6 +36,14 @@ ControlPanel::ControlPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	this->Layout();
 }
 
-void ow::ControlPanel::OnIdle(wxIdleEvent &event){
-	return;
+int ControlPanel::scaleStrToInt(const wxString& label, bool mode){
+	auto map = (mode == true) ? this->weightsMap : this->influencesMap;
+	for(const auto& it : map){
+		if(it.second == label){return it.first;}
+	}
+    return -1;
+}
+
+void ControlPanel::OnIdle(wxIdleEvent &event){
+    return;
 }

@@ -66,13 +66,13 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 
 	pRelationSizer->Add(pRelaEditSizer, 1, wxEXPAND, 5);
 
-	wxButton* pBtnAddRelation = new wxButton(pInputPanel, wxID_ANY, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0);
+	wxButton* pBtnAddRelation = new wxButton(pInputPanel, ID_NEW_RELATION, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0);
 	pRelationSizer->Add(pBtnAddRelation, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
 
 	pMainInputSizer->Add(pRelationSizer, 0, wxEXPAND, 5);
 
-	wxListCtrl* pRelationList = new wxListCtrl(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_LIST);
+	pRelationList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLB_EXTENDED|wxLB_NEEDED_SB);
 	pRelationList->SetMinSize(wxSize(-1,350));
 
 	pMainInputSizer->Add(pRelationList, 1, wxALL|wxEXPAND, 5);
@@ -101,6 +101,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	// send events
     Bind(wxEVT_BUTTON, &IOPanel::OnUpdate, this, ID_UPDATE_ITEMS);
     Bind(wxEVT_BUTTON, &IOPanel::OnAddElement, this, ID_NEW_ELEMENT);
+    Bind(wxEVT_BUTTON, &IOPanel::OnAddRelation, this, ID_NEW_RELATION);
     Bind(wxEVT_TEXT_ENTER, &IOPanel::OnEnterText, this);
 
 	this->SetSizer(pMainSizer);
@@ -130,6 +131,65 @@ void IOPanel::OnAddElement(wxCommandEvent &event){
 	else{
 		wxBell();
 	}
+}
+
+void IOPanel::OnAddRelation(wxCommandEvent &event){
+	wxString influenceLabel = this->pInfluenceComboBox->GetStringSelection();
+	if (this->pInfluenceComboBox->FindString(influenceLabel) != wxNOT_FOUND){
+		wxString sourceLabel = this->pSourceElementsList->GetStringSelection();
+		wxString targetLabel = this->pTargetElementsList->GetStringSelection();
+		RelationshipData* pData = new RelationshipData(
+			RelationshipData::CreateItem(this->getWeight(sourceLabel), sourceLabel),
+			this->getInfluence(influenceLabel),
+			RelationshipData::CreateItem(this->getWeight(targetLabel), targetLabel)
+		);
+		this->AddRelation(pData);
+	}
+}
+
+void IOPanel::AddRelation(RelationshipData* pData){
+	if (this->canAddRelation(pData)){
+		// construct text
+		wxString text = this->getRelationText(pData);
+		this->pRelationList->Append(text, pData);
+	}
+	else{
+		delete pData;
+	}
+}
+
+bool IOPanel::canAddRelation(RelationshipData *pData){
+	long index = -1;
+	for(auto i = 0; i<this->pRelationList->GetCount(); i++){
+		if (*dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i)) == *pData){
+			return false;
+		}
+	}
+    return true;
+}
+
+wxString IOPanel::getRelationText(RelationshipData *pData){
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	if(pData->source.label == pData->target.label){
+		return wxString::Format(wxT("System element %s is affecting itself with %s intensity."),
+			pData->source.label, pControl->influencesMap.find(pData->influenceValue)->second);
+	}
+	else{
+		return wxString::Format(wxT("System element %s is affecting the element %s with %s intensity."),
+			pData->source.label, pData->target.label, pControl->influencesMap.find(pData->influenceValue)->second);
+	}
+}
+
+int IOPanel::getWeight(wxString label){
+    ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	long ndx = ow::findRecord(pControl->pSidePanel->pElementList, 1, label);
+	wxString weightString = pControl->pSidePanel->pElementList->GetItemText(ndx, 0);
+    return pControl->scaleStrToInt(weightString, true);
+}
+
+int IOPanel::getInfluence(wxString label){
+   ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+   return pControl->scaleStrToInt(label, false);
 }
 
 void IOPanel::OnEnterText(wxCommandEvent &event){

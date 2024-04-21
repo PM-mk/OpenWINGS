@@ -10,5 +10,6 @@ target_sources(${PROJECT_NAME}
         ElementPanel.cpp
         IOPanel.cpp
         ScaleDialog.cpp
+        RelationshipData.cpp
         helper.cpp
 )
