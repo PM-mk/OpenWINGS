@@ -72,8 +72,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 
 	pMainInputSizer->Add(pRelationSizer, 0, wxEXPAND, 5);
 
-	pRelationList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLB_EXTENDED|wxLB_NEEDED_SB);
-	pRelationList->SetMinSize(wxSize(-1,350));
+	pRelationList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
 
 	pMainInputSizer->Add(pRelationList, 1, wxALL|wxEXPAND, 5);
 
@@ -113,13 +112,13 @@ void IOPanel::AddElement(const wxString& item){
 	this->pTargetElementsList->Insert(item, 0);
 }
 
-void IOPanel::OnUpdate(wxCommandEvent &event){
+void IOPanel::OnUpdate(wxCommandEvent& event){
     ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	this->UpdateCombo(this->pWeightComboBox, pControl->weightsMap);
 	this->UpdateCombo(this->pInfluenceComboBox, pControl->influencesMap);
 }
 
-void IOPanel::OnAddElement(wxCommandEvent &event){
+void IOPanel::OnAddElement(wxCommandEvent& event){
 	wxString elementLabel = this->pElemNameInput->GetValue();
 	wxString weightLabel = this->pWeightComboBox->GetStringSelection();
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
@@ -133,17 +132,27 @@ void IOPanel::OnAddElement(wxCommandEvent &event){
 	}
 }
 
-void IOPanel::OnAddRelation(wxCommandEvent &event){
+void IOPanel::OnAddRelation(wxCommandEvent& event){
 	wxString influenceLabel = this->pInfluenceComboBox->GetStringSelection();
 	if (this->pInfluenceComboBox->FindString(influenceLabel) != wxNOT_FOUND){
-		wxString sourceLabel = this->pSourceElementsList->GetStringSelection();
-		wxString targetLabel = this->pTargetElementsList->GetStringSelection();
-		RelationshipData* pData = new RelationshipData(
-			RelationshipData::CreateItem(this->getWeight(sourceLabel), sourceLabel),
-			this->getInfluence(influenceLabel),
-			RelationshipData::CreateItem(this->getWeight(targetLabel), targetLabel)
-		);
-		this->AddRelation(pData);
+		wxArrayInt sourceIndices = {};
+		wxArrayInt targetIndices = {};
+		int sourceCount = this->pSourceElementsList->GetSelections(sourceIndices);
+		int targetCount = this->pTargetElementsList->GetSelections(targetIndices);
+		if(sourceCount && targetCount){
+			for(const auto& sourceNdx : sourceIndices){
+				wxString sourceLabel = this->pSourceElementsList->GetString(sourceNdx);
+				for(const auto& targetNdx : targetIndices){
+					wxString targetLabel = this->pTargetElementsList->GetString(targetNdx);
+					RelationshipData* pData = new RelationshipData(
+						RelationshipData::CreateItem(this->getWeight(sourceLabel), sourceLabel),
+						this->getInfluence(influenceLabel),
+						RelationshipData::CreateItem(this->getWeight(targetLabel), targetLabel)
+					);
+					this->AddRelation(pData);
+				}
+			}
+		}
 	}
 }
 
@@ -159,7 +168,6 @@ void IOPanel::AddRelation(RelationshipData* pData){
 }
 
 bool IOPanel::canAddRelation(RelationshipData *pData){
-	long index = -1;
 	for(auto i = 0; i<this->pRelationList->GetCount(); i++){
 		if (*dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i)) == *pData){
 			return false;
@@ -192,7 +200,7 @@ int IOPanel::getInfluence(wxString label){
    return pControl->scaleStrToInt(label, false);
 }
 
-void IOPanel::OnEnterText(wxCommandEvent &event){
+void IOPanel::OnEnterText(wxCommandEvent& event){
 	wxComboBox* pCombo = dynamic_cast<wxComboBox*>(event.GetEventObject());
 	wxString str = pCombo->GetValue();
 	int ndx = pCombo->FindString(str);

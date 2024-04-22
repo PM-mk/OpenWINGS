@@ -21,7 +21,7 @@ namespace ow{
     };
     inline bool operator==(const RelationshipData& left, const RelationshipData& right){
         return left.source.label == right.source.label
-            && left.target.label == right.target.label
-            && left.influenceValue == right.influenceValue;
+            && left.target.label == right.target.label;
+            // && left.influenceValue == right.influenceValue;
         };
 } // namespace ow
