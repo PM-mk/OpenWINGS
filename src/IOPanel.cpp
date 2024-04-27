@@ -87,7 +87,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	wxBoxSizer* pMainOutputSizer;
 	pMainOutputSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxButton* pBtnCalculate = new wxButton(pOutputPanel, wxID_ANY, wxT("Calculate!"), wxDefaultPosition, wxDefaultSize, 0);
+	wxButton* pBtnCalculate = new wxButton(pOutputPanel, ID_RUN_WINGS, wxT("Calculate!"), wxDefaultPosition, wxDefaultSize, 0);
 	pMainOutputSizer->Add(pBtnCalculate, 0, wxALIGN_RIGHT|wxALL, 5);
 
 
@@ -102,6 +102,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
     Bind(wxEVT_BUTTON, &IOPanel::OnAddElement, this, ID_NEW_ELEMENT);
     Bind(wxEVT_BUTTON, &IOPanel::OnAddRelation, this, ID_NEW_RELATION);
     Bind(wxEVT_TEXT_ENTER, &IOPanel::OnEnterText, this);
+    Bind(wxEVT_BUTTON, &IOPanel::OnCalculate, this, ID_RUN_WINGS);
 
 	this->SetSizer(pMainSizer);
 	this->Layout();
@@ -215,10 +216,49 @@ void IOPanel::OnEnterText(wxCommandEvent& event){
 	}
 }
 
-void IOPanel::UpdateCombo(wxComboBox *pCombo, const std::map<int, wxString> &map){
+void IOPanel::UpdateCombo(wxComboBox *pCombo, const std::map<int, wxString> &map)
+{
     pCombo->Clear();
 	for(const auto& pair : map){
 		pCombo->Append(pair.second);
     }
 	pCombo->AutoComplete(pCombo->GetStrings());
+}
+
+void IOPanel::OnCalculate(wxCommandEvent &event){
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
+	int relationCount = this->pRelationList->GetCount();
+	if (elementCount >= 2 && relationCount){
+		Array2d matrix = this->getMatrix();
+		this->runWings(matrix);
+	}
+	// TODO: implement function - plot output: void plotWings()
+	return;
+}
+
+Array2d IOPanel::getMatrix(){
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
+	Array2d matrix(elementCount, std::vector<float>(elementCount,0));
+	// fill weight values
+	for(int i = 0; i<elementCount; i++){
+		int value = pControl->scaleStrToInt(pControl->pSidePanel->pElementList->GetItemText(i, 0), true);
+		matrix[i][i] += value;
+	}
+	// fill influence values
+	int relationCount = this->pRelationList->GetCount();
+	for(int i = 0; i<relationCount; i++){
+		RelationshipData* pData = dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i));
+		int x = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->source.label);
+		int y = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->target.label);
+		matrix[x][y] += pData->influenceValue;
+	}
+    return matrix;
+}
+
+void IOPanel::runWings(Array2d& matrix){
+	// TODO: implement this
+	// calibrate matrix, transform it, ...
+
 }

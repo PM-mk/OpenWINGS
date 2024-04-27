@@ -10,6 +10,7 @@
 #include "ControlPanel.hpp"
 #include "helper.hpp"
 #include "RelationshipData.hpp"
+using Array2d = std::vector<std::vector<float>>;
 
 namespace ow{
     class IOPanel : public wxPanel{
@@ -29,11 +30,14 @@ namespace ow{
             int getInfluence(wxString label);
         protected:
         private:
+            Array2d getMatrix();
             void UpdateCombo(wxComboBox* pCombo, const std::map<int, wxString>& map);
+            void runWings(Array2d& matrix);
         // handlers:
             void OnUpdate(wxCommandEvent& event);
             void OnAddElement(wxCommandEvent& event);
             void OnAddRelation(wxCommandEvent& event);
             void OnEnterText(wxCommandEvent& event);
+            void OnCalculate(wxCommandEvent& event);
     };
 } // namespace ow

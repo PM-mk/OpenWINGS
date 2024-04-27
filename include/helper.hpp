@@ -14,7 +14,8 @@ namespace ow{
         ID_NEW_RELATION, // for scale editor
         ID_UPDATE_ITEMS,
         ID_WEIGHT_COMBO,
-        ID_INFLUENCE_COMBO
+        ID_INFLUENCE_COMBO,
+        ID_RUN_WINGS
     };
     void ErrMsg(wxFrame* frame, const wxString& msg);
     bool Ask(wxFrame* frame, const wxString& msg);
