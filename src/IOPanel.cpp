@@ -93,7 +93,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pAbsValuesCheckbox = new wxCheckBox(pOutputPanel, wxID_ANY, wxT("Absolute values"), wxDefaultPosition, wxDefaultSize, 0);
 	pRunBtnSizer->Add(pAbsValuesCheckbox, 0, wxALL|wxEXPAND, 5);
 
-	wxButton* pBtnCalculate = new wxButton(pOutputPanel, wxID_ANY, wxT("Run WINGS"), wxDefaultPosition, wxDefaultSize, 0);
+	wxButton* pBtnCalculate = new wxButton(pOutputPanel, ID_RUN_WINGS, wxT("Run WINGS"), wxDefaultPosition, wxDefaultSize, 0);
 	pRunBtnSizer->Add(pBtnCalculate, 0, wxALL|wxEXPAND, 5);
 
 	pMainOutputSizer->Add(pRunBtnSizer, 0, wxALIGN_RIGHT, 5);
@@ -102,7 +102,12 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	m_staticText8->Wrap(-1);
 	pMainOutputSizer->Add(m_staticText8, 1, wxALIGN_CENTER|wxALL, 5);
 
-	pWingsList = new wxListCtrl(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	pWingsList = new wxListView(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	pWingsList->InsertColumn(0, wxT("Label"));
+	pWingsList->InsertColumn(1, wxT("Impact"));
+	pWingsList->InsertColumn(2, wxT("Receptivity"));
+	pWingsList->InsertColumn(3, wxT("Involvement"));
+	pWingsList->InsertColumn(4, wxT("Role"));
 	pMainOutputSizer->Add(pWingsList, 1, wxALL|wxEXPAND, 5);
 	pOutputPanel->SetSizer(pMainOutputSizer);
 	pOutputPanel->Layout();
@@ -154,11 +159,14 @@ void IOPanel::OnAddRelation(wxCommandEvent& event){
 		int sourceCount = this->pSourceElementsList->GetSelections(sourceIndices);
 		int targetCount = this->pTargetElementsList->GetSelections(targetIndices);
 		if(sourceCount && targetCount){
+			wxString targetLabel = wxEmptyString;
+			wxString sourceLabel = wxEmptyString;
+			RelationshipData* pData = nullptr;
 			for(const auto& sourceNdx : sourceIndices){
 				wxString sourceLabel = this->pSourceElementsList->GetString(sourceNdx);
 				for(const auto& targetNdx : targetIndices){
-					wxString targetLabel = this->pTargetElementsList->GetString(targetNdx);
-					RelationshipData* pData = new RelationshipData(
+					targetLabel = this->pTargetElementsList->GetString(targetNdx);
+					pData = new RelationshipData(
 						RelationshipData::CreateItem(this->getWeight(sourceLabel), sourceLabel),
 						this->getInfluence(influenceLabel),
 						RelationshipData::CreateItem(this->getWeight(targetLabel), targetLabel)
@@ -246,31 +254,34 @@ void IOPanel::OnCalculate(wxCommandEvent &event){
 		Matrix matrix = this->getMatrix();
 		this->runWings(matrix);
 	}
-	// TODO: implement function - plot output: void plotWings()
-	return;
 }
 
 Matrix IOPanel::getMatrix(){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
 	Matrix matrix = Matrix::Zero(elementCount, elementCount);
+	int value = 0;
 	// fill weight values
 	for(int i = 0; i<elementCount; i++){
-		int value = pControl->scaleStrToInt(pControl->pSidePanel->pElementList->GetItemText(i, 0), true);
+		value = pControl->scaleStrToInt(pControl->pSidePanel->pElementList->GetItemText(i, 0), true);
 		matrix(i, i) += value;
 	}
 	// fill influence values
 	int relationCount = this->pRelationList->GetCount();
+	RelationshipData* pData = nullptr;
+	int x = 0;
+	int y = 0;
 	for(int i = 0; i<relationCount; i++){
-		RelationshipData* pData = dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i));
-		int x = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->source.label);
-		int y = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->target.label);
+		pData = dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i));
+		x = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->source.label);
+		y = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->target.label);
 		matrix(x, y) += pData->influenceValue;
 	}
     return matrix;
 }
 
 void IOPanel::runWings(Matrix& matrix){
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	bool absoluteMode = this->pAbsValuesCheckbox->IsChecked();
 
 	float scaleFactor = matrix.sum();
@@ -278,32 +289,32 @@ void IOPanel::runWings(Matrix& matrix){
 	int n = matrix.cols();
 	Matrix matrixIS = (Matrix::Identity(n, n) - matrix).inverse(); /* matrix = (I - S)^(-1) */
 	matrix = matrix * matrixIS; /* matrix = S*[(I - S)^(-1)] = T */
-	if (absoluteMode){
+
+	Vector impactVector = {};
+	Vector receptivityVector = {};
+	Vector involvementVector = {};
+	Vector roleVector = {};
+
+	if (this->pAbsValuesCheckbox->IsChecked()){ /* if mode = absolute values */
 		matrix = matrix.cwiseAbs();
+		impactVector = matrix.rowwise().sum();
+		receptivityVector = matrix.colwise().sum();
 	}
-		auto impactVector = matrix.rowwise().sum();
-		auto receptivityVector = matrix.colwise().sum();
-
-		auto involvementVector = impactVector + receptivityVector;
-		auto roleVector = impactVector - receptivityVector;
-	// make output absolute or relative
-
-	// Invo = NormImp + NormRec.T # Involvement
-	if (absoluteMode){
-		auto impactVector = matrix.rowwise().sum().cwiseAbs();
-		auto receptivityVector = matrix.colwise().sum().cwiseAbs();
-	}else{
-		auto impactVector = matrix.rowwise().sum();
-		auto receptivityVector = matrix.colwise().sum();
+	else{
+		impactVector = matrix.rowwise().sum().cwiseAbs();
+		receptivityVector = matrix.colwise().sum().cwiseAbs();
 	}
+	involvementVector = impactVector + receptivityVector;
+	roleVector = impactVector - receptivityVector;
 
-	auto involvementVector = impactVector + receptivityVector;
-	auto roleVector = impactVector - receptivityVector;
-	// Role = NormImp - NormRec.T # Role
-
-	// # Rounding output
-	// NormImp4 = np.round(NormImp, decimals=4)
-	// NormRec4 = np.round(NormRec, decimals=4)
-	// Invo4 = np.round(Invo, decimals=4)
-	// Role4 = np.round(Role, decimals=4)
+	long record = 0;
+	long ndx = 0;
+	this->pWingsList->DeleteAllItems();
+	for (auto i = 0; i < n; i++){
+		ndx = this->pWingsList->InsertItem(record++, pControl->pSidePanel->pElementList->GetItemText(i, 1));
+		this->pWingsList->SetItem(ndx, 1, wxString::Format(wxT("%f"), impactVector(i)));
+		this->pWingsList->SetItem(ndx, 2, wxString::Format(wxT("%f"), receptivityVector(i)));
+		this->pWingsList->SetItem(ndx, 3, wxString::Format(wxT("%f"), involvementVector(i)));
+		this->pWingsList->SetItem(ndx, 4, wxString::Format(wxT("%f"), roleVector(i)));
+	}
 }

@@ -12,6 +12,7 @@
 #include "RelationshipData.hpp"
 #include <Eigen/Dense>
 using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
+using Vector = Eigen::Vector<float, Eigen::Dynamic>;
 
 namespace ow{
     class IOPanel : public wxPanel{
@@ -24,7 +25,7 @@ namespace ow{
             wxListBox* pTargetElementsList;
             wxListBox* pRelationList;
             wxCheckBox* pAbsValuesCheckbox;
-            wxListCtrl* pWingsList;
+            wxListView* pWingsList;
             void AddElement(const wxString& item);
             void AddRelation(RelationshipData* pData);
             bool canAddRelation(RelationshipData* pData);
