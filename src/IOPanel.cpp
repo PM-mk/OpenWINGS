@@ -138,10 +138,13 @@ void IOPanel::OnUpdate(wxCommandEvent& event){
 }
 
 void IOPanel::OnAddElement(wxCommandEvent& event){
-	wxString elementLabel = this->pElemNameInput->GetValue();
+	wxString elementLabel = this->pElemNameInput->GetValue().Trim().Trim(false);
 	wxString weightLabel = this->pWeightComboBox->GetStringSelection();
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
-	if (this->pWeightComboBox->FindString(weightLabel) != wxNOT_FOUND && pControl->pSidePanel->canAddElement(elementLabel)){
+	if (elementLabel != wxEmptyString &&
+		this->pWeightComboBox->FindString(weightLabel) != wxNOT_FOUND &&
+		pControl->pSidePanel->canAddElement(elementLabel)){
+
 		this->AddElement(elementLabel);
 		wxPostEvent(pControl->pSidePanel, event); /* fire OnAdd in ElementPanel*/
 		this->pElemNameInput->SetFocus();
