@@ -87,14 +87,27 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	wxBoxSizer* pMainOutputSizer;
 	pMainOutputSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxButton* pBtnCalculate = new wxButton(pOutputPanel, ID_RUN_WINGS, wxT("Calculate!"), wxDefaultPosition, wxDefaultSize, 0);
-	pMainOutputSizer->Add(pBtnCalculate, 0, wxALIGN_RIGHT|wxALL, 5);
+	wxBoxSizer* pRunBtnSizer;
+	pRunBtnSizer = new wxBoxSizer(wxHORIZONTAL);
 
+	pAbsValuesCheckbox = new wxCheckBox(pOutputPanel, wxID_ANY, wxT("Absolute values"), wxDefaultPosition, wxDefaultSize, 0);
+	pRunBtnSizer->Add(pAbsValuesCheckbox, 0, wxALL|wxEXPAND, 5);
 
+	wxButton* pBtnCalculate = new wxButton(pOutputPanel, wxID_ANY, wxT("Run WINGS"), wxDefaultPosition, wxDefaultSize, 0);
+	pRunBtnSizer->Add(pBtnCalculate, 0, wxALL|wxEXPAND, 5);
+
+	pMainOutputSizer->Add(pRunBtnSizer, 0, wxALIGN_RIGHT, 5);
+
+	wxStaticText* m_staticText8 = new wxStaticText(pOutputPanel, wxID_ANY, wxT("Output here"), wxDefaultPosition, wxDefaultSize, 0);
+	m_staticText8->Wrap(-1);
+	pMainOutputSizer->Add(m_staticText8, 1, wxALIGN_CENTER|wxALL, 5);
+
+	pWingsList = new wxListCtrl(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	pMainOutputSizer->Add(pWingsList, 1, wxALL|wxEXPAND, 5);
 	pOutputPanel->SetSizer(pMainOutputSizer);
 	pOutputPanel->Layout();
 	pMainOutputSizer->Fit(pOutputPanel);
-	pNotebook->AddPage(pOutputPanel, wxT("Output"), false);
+	pNotebook->AddPage(pOutputPanel, wxT("WINGS"), false);
 
 	pMainSizer->Add(pNotebook, 1, wxEXPAND | wxALL, 5);
 	// send events
@@ -230,21 +243,21 @@ void IOPanel::OnCalculate(wxCommandEvent &event){
 	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
 	int relationCount = this->pRelationList->GetCount();
 	if (elementCount >= 2 && relationCount){
-		Array2d matrix = this->getMatrix();
+		Matrix matrix = this->getMatrix();
 		this->runWings(matrix);
 	}
 	// TODO: implement function - plot output: void plotWings()
 	return;
 }
 
-Array2d IOPanel::getMatrix(){
+Matrix IOPanel::getMatrix(){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
-	Array2d matrix(elementCount, std::vector<float>(elementCount,0));
+	Matrix matrix = Matrix::Zero(elementCount, elementCount);
 	// fill weight values
 	for(int i = 0; i<elementCount; i++){
 		int value = pControl->scaleStrToInt(pControl->pSidePanel->pElementList->GetItemText(i, 0), true);
-		matrix[i][i] += value;
+		matrix(i, i) += value;
 	}
 	// fill influence values
 	int relationCount = this->pRelationList->GetCount();
@@ -252,13 +265,45 @@ Array2d IOPanel::getMatrix(){
 		RelationshipData* pData = dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i));
 		int x = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->source.label);
 		int y = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->target.label);
-		matrix[x][y] += pData->influenceValue;
+		matrix(x, y) += pData->influenceValue;
 	}
     return matrix;
 }
 
-void IOPanel::runWings(Array2d& matrix){
-	// TODO: implement this
-	// calibrate matrix, transform it, ...
+void IOPanel::runWings(Matrix& matrix){
+	bool absoluteMode = this->pAbsValuesCheckbox->IsChecked();
 
+	float scaleFactor = matrix.sum();
+	matrix = matrix / scaleFactor; /* matrix = A/s */
+	int n = matrix.cols();
+	Matrix matrixIS = (Matrix::Identity(n, n) - matrix).inverse(); /* matrix = (I - S)^(-1) */
+	matrix = matrix * matrixIS; /* matrix = S*[(I - S)^(-1)] = T */
+	if (absoluteMode){
+		matrix = matrix.cwiseAbs();
+	}
+		auto impactVector = matrix.rowwise().sum();
+		auto receptivityVector = matrix.colwise().sum();
+
+		auto involvementVector = impactVector + receptivityVector;
+		auto roleVector = impactVector - receptivityVector;
+	// make output absolute or relative
+
+	// Invo = NormImp + NormRec.T # Involvement
+	if (absoluteMode){
+		auto impactVector = matrix.rowwise().sum().cwiseAbs();
+		auto receptivityVector = matrix.colwise().sum().cwiseAbs();
+	}else{
+		auto impactVector = matrix.rowwise().sum();
+		auto receptivityVector = matrix.colwise().sum();
+	}
+
+	auto involvementVector = impactVector + receptivityVector;
+	auto roleVector = impactVector - receptivityVector;
+	// Role = NormImp - NormRec.T # Role
+
+	// # Rounding output
+	// NormImp4 = np.round(NormImp, decimals=4)
+	// NormRec4 = np.round(NormRec, decimals=4)
+	// Invo4 = np.round(Invo, decimals=4)
+	// Role4 = np.round(Role, decimals=4)
 }

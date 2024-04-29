@@ -10,7 +10,8 @@
 #include "ControlPanel.hpp"
 #include "helper.hpp"
 #include "RelationshipData.hpp"
-using Array2d = std::vector<std::vector<float>>;
+#include <Eigen/Dense>
+using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
 
 namespace ow{
     class IOPanel : public wxPanel{
@@ -22,6 +23,8 @@ namespace ow{
             wxListBox* pSourceElementsList;
             wxListBox* pTargetElementsList;
             wxListBox* pRelationList;
+            wxCheckBox* pAbsValuesCheckbox;
+            wxListCtrl* pWingsList;
             void AddElement(const wxString& item);
             void AddRelation(RelationshipData* pData);
             bool canAddRelation(RelationshipData* pData);
@@ -30,9 +33,9 @@ namespace ow{
             int getInfluence(wxString label);
         protected:
         private:
-            Array2d getMatrix();
+            Matrix getMatrix();
             void UpdateCombo(wxComboBox* pCombo, const std::map<int, wxString>& map);
-            void runWings(Array2d& matrix);
+            void runWings(Matrix& matrix);
         // handlers:
             void OnUpdate(wxCommandEvent& event);
             void OnAddElement(wxCommandEvent& event);
