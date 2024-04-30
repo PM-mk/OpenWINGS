@@ -7,7 +7,7 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     wxBoxSizer* pSizerMain = new wxBoxSizer(wxVERTICAL);
     wxString aboutOw = "OpenWINGS ";
     aboutOw += PROJECT_VER;
-    aboutOw += "\nOpen source GUI tool for WINGS and ALMODES system analysis and modelling.\n\n";
+    aboutOw += "\nOpen source GUI tool for WINGS and ALMODES system analysis and modelling.";
     wxStaticText* pAboutText = new wxStaticText(this, wxID_ANY, wxString::FromUTF8(aboutOw),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     wxString signature = "by Paweł Misiek";
@@ -34,7 +34,7 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     pSizerWxCredit->Add(pWxText, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
     pSizerWxCredit->Add(pLinkWx, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
-    // TinyXML-2 credits
+    // wxMathPlot credits
     wxBoxSizer* pSizerPlotCredit = new wxBoxSizer(wxVERTICAL);
     wxString aboutMathPlot = wxT("Plotting handled with wxMathPlot 0.2.0");
     wxStaticText* pPlotTextCtrl = new wxStaticText( this, wxID_ANY, aboutMathPlot, wxDefaultPosition, wxDefaultSize);
