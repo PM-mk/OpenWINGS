@@ -98,12 +98,15 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 
 	pMainOutputSizer->Add(pRunBtnSizer, 0, wxALIGN_RIGHT, 5);
 
-	wxStaticText* m_staticText8 = new wxStaticText(pOutputPanel, wxID_ANY, wxT("Output here"), wxDefaultPosition, wxDefaultSize, 0);
-	m_staticText8->Wrap(-1);
-	pMainOutputSizer->Add(m_staticText8, 1, wxALIGN_CENTER|wxALL, 5);
+	// wxStaticText* m_staticText8 = new wxStaticText(pOutputPanel, wxID_ANY, wxT("Output here"), wxDefaultPosition, wxDefaultSize, 0);
+	// m_staticText8->Wrap(-1);
+	// pMainOutputSizer->Add(m_staticText8, 1, wxALIGN_CENTER|wxALL, 5);
+
+    pWingsPlot = new mpWindow(pOutputPanel, -1, wxPoint(0,0), wxSize(100,100), wxSUNKEN_BORDER);
+	pMainOutputSizer->Add(pWingsPlot, 1, wxALIGN_CENTER|wxALL, 5);
 
 	pWingsList = new wxListView(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
-	pWingsList->InsertColumn(0, wxT("Label"));
+	pWingsList->InsertColumn(0, wxT("Label"), 0, 350);
 	pWingsList->InsertColumn(1, wxT("Impact"));
 	pWingsList->InsertColumn(2, wxT("Receptivity"));
 	pWingsList->InsertColumn(3, wxT("Involvement"));

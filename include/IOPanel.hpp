@@ -11,6 +11,8 @@
 #include "helper.hpp"
 #include "RelationshipData.hpp"
 #include <Eigen/Dense>
+#include "mathplot.h"
+
 using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
 using Vector = Eigen::Vector<float, Eigen::Dynamic>;
 
@@ -26,6 +28,7 @@ namespace ow{
             wxListBox* pRelationList;
             wxCheckBox* pAbsValuesCheckbox;
             wxListView* pWingsList;
+            mpWindow* pWingsPlot;
             void AddElement(const wxString& item);
             void AddRelation(RelationshipData* pData);
             bool canAddRelation(RelationshipData* pData);
