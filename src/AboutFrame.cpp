@@ -5,11 +5,13 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     wxDialog(parent, wxID_ABOUT, "About", wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE){
     // main credits
     wxBoxSizer* pSizerMain = new wxBoxSizer(wxVERTICAL);
-    wxString aboutOw = "";
-    aboutOw += "OpenWINGS Version 0.0.1\n";
-    aboutOw += "Open source GUI tool for WINGS and ALMODES system analysis and modelling.\n\n";
-    aboutOw += "by Paweł Misiek\n";
+    wxString aboutOw = "OpenWINGS ";
+    aboutOw += PROJECT_VER;
+    aboutOw += "\nOpen source GUI tool for WINGS and ALMODES system analysis and modelling.\n\n";
     wxStaticText* pAboutText = new wxStaticText(this, wxID_ANY, wxString::FromUTF8(aboutOw),
+        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
+    wxString signature = "by Paweł Misiek";
+    wxStaticText* pSignatureText = new wxStaticText(this, wxID_ANY, wxString::FromUTF8(signature),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER_HORIZONTAL);
     pAboutText->Wrap(-1);
     wxHyperlinkCtrl* pLinkGithub = new wxHyperlinkCtrl(this, wxID_ANY, "github.com/PM-mk/OpenWINGS",
@@ -18,6 +20,7 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     pSizerMain->Add(pAboutText, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 5);
     wxStaticBitmap* ow_logo = new wxStaticBitmap(this, wxID_ANY, wxBitmap(ow_logo_xpm), wxDefaultPosition, wxDefaultSize, 0);
     pSizerMain->Add(ow_logo, 0, wxALIGN_CENTER_HORIZONTAL, 5);
+    pSizerMain->Add(pSignatureText, 0, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP, 5);
     pSizerMain->Add(pLinkGithub, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
     pSizerMain->Add(pStaticLine, 0, wxALL|wxEXPAND, 5);
 

@@ -6,3 +6,4 @@
 !CMakeLists.txt
 !src
 !include
+!config.hpp.in
