@@ -5,8 +5,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
     // menus
     wxMenu* pFileMenu = new wxMenu;
-    pFileMenu->Append(ID_NEW_WINGS, wxT("New &WINGS\tCtrl+W"), wxT("Create new WINGS project"));
-    pFileMenu->Append(ID_NEW_ALMODES, wxT("New &ALMODES\tCtrl+A"), wxT("Create new ALMODES project"));
+    pFileMenu->Append(ID_NEW_PROJECT, wxT("&New project\tCtrl+N"), wxT("Create new WINGS/ALMODES project"));
     pFileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"), wxT("Open project"));
     pFileMenu->Append(wxID_SEPARATOR);
     pFileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Save current project"));
@@ -22,37 +21,38 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pMenuBar->Append(pFileMenu, wxT("&File"));
     pMenuBar->Append(pHelpMenu, wxT("&Help"));
     SetMenuBar(pMenuBar);
-    // panels
+
     wxBoxSizer* pMainSizer = new wxBoxSizer(wxVERTICAL);
     // panels - start
-    panelMap["start"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    pStartPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 
     // move this to base class
     wxBoxSizer* pStartSizer = new wxBoxSizer(wxVERTICAL);
-    panelMap["start"]->SetSizer(pStartSizer);
-    panelMap["start"]->Layout();
-    pStartSizer->Fit(panelMap["start"]);
-    wxStaticText* pStartTxt = new wxStaticText(panelMap["start"], wxID_ANY, wxT("Start"),
+    pStartPanel->SetSizer(pStartSizer);
+    pStartPanel->Layout();
+    pStartSizer->Fit(pStartPanel);
+    wxStaticText* pStartTxt = new wxStaticText(pStartPanel, wxID_ANY, wxT("Start"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
     pStartSizer->Add(pStartTxt, 1, wxEXPAND, 5);
+    pMainSizer->Add(pStartPanel, 1, wxEXPAND, 5);
 
-    // panels
     pControlPanel = new ControlPanel(this);
-    panelMap["editWINGS"] = pControlPanel;
-    panelMap["editALMODES"] = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    panelMap["editALMODES"]->SetBackgroundColour(wxColour(207, 21, 234));
-    for(const auto& panel : panelMap){
-        pMainSizer->Add(panel.second, 1, wxEXPAND, 5);
-        (panel.second)->Hide();
-    };
-    panelMap["start"]->Show();
+    pMainSizer->Add(pControlPanel, 1, wxEXPAND, 5);
+    pControlPanel->Hide();
+    pStartPanel->Show();
+    // panels - end
+
+    // xml document
+    pProjectFile = new wxXmlDocument();
+    // wxXmlNode* newRoot = new wxXmlNode();
+    // this->pProjectFile->SetRoot(newRoot);
+
     SetSizer(pMainSizer);
     // status bar
     CreateStatusBar(2);
     SetStatusText(wxT("Ready"));
     // send events
-    Bind(wxEVT_MENU, &MainFrame::OnNewFile, this, ID_NEW_WINGS);
-    Bind(wxEVT_MENU, &MainFrame::OnNewFile, this, ID_NEW_ALMODES);
+    Bind(wxEVT_MENU, &MainFrame::OnNewFile, this, ID_NEW_PROJECT);
     Bind(wxEVT_MENU, &MainFrame::OnOpen, this, wxID_OPEN);
     Bind(wxEVT_MENU, &MainFrame::OnSave, this, wxID_SAVE);
     Bind(wxEVT_MENU, &MainFrame::OnSaveAs, this, wxID_SAVEAS);
@@ -63,31 +63,17 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     Layout();
 }
 
-void MainFrame::SetPanel(std::string key){
-    for(const auto& panel : panelMap){
-        panel.second->Hide();
-    };
-    this->panelMap[key]->Show();
-    this->panelMap[key]->GetContainingSizer()->Layout();
+void MainFrame::SetPanel(wxPanel* pPanel){
+    pPanel->GetContainingSizer()->ShowItems(false);
+    pPanel->Show();
+    pPanel->GetContainingSizer()->Layout();
 }
 
 void MainFrame::OnNewFile(wxCommandEvent &event){
-    int eventId = event.GetId();
-    std::string panel = "";
-    if(eventId == ID_NEW_WINGS){
-        panel = "WINGS";
-    }
-    else if(eventId == ID_NEW_ALMODES){
-        panel = "ALMODES";
-    }
-    else{
-        return;
-    }
-
     if(!this->IsFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nProceed?")){
-        this->SetStatusText(wxString::Format(wxT("Unsaved project - %s"), panel));
-        this->projectFile.Clear();
-        this->SetPanel(panel.insert(0,"edit"));
+        this->SetStatusText(wxT("Unsaved project"));
+        delete this->pProjectFile->DetachRoot();
+        this->SetPanel(this->pControlPanel);
         this->EnableSaving(true);
     }
 }
@@ -95,13 +81,13 @@ void MainFrame::OnNewFile(wxCommandEvent &event){
 void MainFrame::OnOpen(wxCommandEvent &event){
     wxString fileName = wxLoadFileSelector(wxT("a project"), "XML", wxEmptyString, this);
     if(!fileName.empty()){
-        tinyxml2::XMLError loadResult = this->projectFile.LoadFile(fileName);
-        if(loadResult == tinyxml2::XML_SUCCESS){
-            std::string projectType = this->projectFile.RootElement()->Attribute("type");
-            if(projectType == "WINGS" || projectType == "ALMODES"){
+        bool loadResult = pProjectFile->Load(fileName);
+        if(loadResult){
+            wxString projectType = this->pProjectFile->GetRoot()->GetAttribute("type");
+            if(projectType == "OpenWINGS"){
                 SetStatusText(wxString::Format(wxT("%s - %s"), fileName, projectType));
                 // TODO: further work mode handling here, load data into controls
-                this->SetPanel(projectType.insert(0,"edit"));
+                this->SetPanel(this->pControlPanel);
                 this->EnableSaving(true);
             }
             else{
@@ -110,8 +96,7 @@ void MainFrame::OnOpen(wxCommandEvent &event){
             }
         }
         else{
-            ErrMsg(this, wxString::Format(wxT("Could not open file.\n\n%s"),
-                this->projectFile.ErrorIDToName(loadResult)));
+            ErrMsg(this, wxT("Could not open file.\n\n%s"));
         }
     }
 }
@@ -127,7 +112,7 @@ void MainFrame::EnableSaving(bool enable){
 }
 
 bool MainFrame::IsFileLoaded(){
-    return !this->projectFile.NoChildren();
+    return this->pProjectFile->GetRoot();
 }
 
 void MainFrame::OnSave(wxCommandEvent &event){

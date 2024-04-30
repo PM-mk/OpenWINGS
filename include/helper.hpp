@@ -7,8 +7,7 @@
 
 namespace ow{
     enum eventID{
-        ID_NEW_WINGS = wxID_HIGHEST+1,
-        ID_NEW_ALMODES,
+        ID_NEW_PROJECT = wxID_HIGHEST+1,
         ID_SET_DEFAULT,
         ID_NEW_ELEMENT, // for IOPanel
         ID_NEW_RELATION, // for scale editor

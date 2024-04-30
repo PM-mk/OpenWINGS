@@ -29,26 +29,25 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     wxString aboutWx = wxString::Format(wxT("GUI made with %s"),wxVERSION_STRING);
     wxStaticText* pWxText = new wxStaticText( this, wxID_ANY, aboutWx, wxDefaultPosition, wxDefaultSize);
     pWxText->Wrap(-1);
-    wxHyperlinkCtrl* pLinkWx = new wxHyperlinkCtrl(this, wxID_ANY, "wxwidgets.org",
+    wxHyperlinkCtrl* pLinkWx = new wxHyperlinkCtrl(this, wxID_ANY, wxT("wxwidgets.org"),
         wxT("https://www.wxwidgets.org"), wxDefaultPosition, wxDefaultSize);
     pSizerWxCredit->Add(pWxText, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
     pSizerWxCredit->Add(pLinkWx, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
     // TinyXML-2 credits
-    wxBoxSizer* pSizerXmlCredit = new wxBoxSizer(wxVERTICAL);
-    wxString aboutXml = wxString::Format(wxT("XML files handled with TinyXML-2 v.%i.%i.%i"),
-        TINYXML2_MAJOR_VERSION, TINYXML2_MINOR_VERSION, TINYXML2_PATCH_VERSION);
-    wxStaticText* pXmlText = new wxStaticText( this, wxID_ANY, aboutXml, wxDefaultPosition, wxDefaultSize);
-    pXmlText->Wrap(-1);
-    wxHyperlinkCtrl* pLinkXml = new wxHyperlinkCtrl(this, wxID_ANY, "github.com/leethomason/tinyxml2",
-        wxT("https://github.com/leethomason/tinyxml2"), wxDefaultPosition, wxDefaultSize);
-    pSizerXmlCredit->Add(pXmlText, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
-    pSizerXmlCredit->Add(pLinkXml, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+    wxBoxSizer* pSizerPlotCredit = new wxBoxSizer(wxVERTICAL);
+    wxString aboutMathPlot = wxT("Plotting handled with wxMathPlot 0.2.0");
+    wxStaticText* pPlotTextCtrl = new wxStaticText( this, wxID_ANY, aboutMathPlot, wxDefaultPosition, wxDefaultSize);
+    pPlotTextCtrl->Wrap(-1);
+    wxHyperlinkCtrl* pLinkXml = new wxHyperlinkCtrl(this, wxID_ANY, wxT("wxmathplot.sourceforge.io/"),
+        wxT("https://wxmathplot.sourceforge.io/"), wxDefaultPosition, wxDefaultSize);
+    pSizerPlotCredit->Add(pPlotTextCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+    pSizerPlotCredit->Add(pLinkXml, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
     // finish frame
     pAboutText->SetFocus(); // set focus on wxStaticText control to prevent focus frame from showing
     pSizerMain->Add(pSizerWxCredit, 0, wxEXPAND, 5);
-    pSizerMain->Add(pSizerXmlCredit, 0, wxEXPAND, 5);
+    pSizerMain->Add(pSizerPlotCredit, 0, wxEXPAND, 5);
     this->SetSizer(pSizerMain);
     this->Layout();
     this->Fit();

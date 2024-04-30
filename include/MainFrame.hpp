@@ -3,7 +3,7 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif // WX_PRECOMP
-#include "tinyxml2.h"
+#include "wx/xml/xml.h"
 #include "AboutFrame.hpp"
 #include "OpenWingsApp.hpp"
 #include "ControlPanel.hpp"
@@ -13,12 +13,12 @@ namespace ow{
     class MainFrame : public wxFrame{
         public:
             MainFrame();
-            ControlPanel* pControlPanel;
         protected:
         private:
-            std::unordered_map<std::string, wxPanel*> panelMap;
-            tinyxml2::XMLDocument projectFile;
-            void SetPanel(std::string key);
+            ControlPanel* pControlPanel;
+            wxPanel* pStartPanel;
+            wxXmlDocument* pProjectFile;
+            void SetPanel(wxPanel* pPanel);
             void EnableSaving(bool enable);
             bool IsFileLoaded();
         // handlers:

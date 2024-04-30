@@ -4,7 +4,6 @@ target_sources(${PROJECT_NAME}
         OpenWingsApp.cpp
         MainFrame.cpp
         AboutFrame.cpp
-        tinyxml2.cpp
         ScalePanel.cpp
         ControlPanel.cpp
         ElementPanel.cpp
