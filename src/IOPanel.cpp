@@ -98,8 +98,14 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pRunBtnSizer->Add(pBtnCalculate, 0, wxALL|wxEXPAND, 5);
 
 	pMainOutputSizer->Add(pRunBtnSizer, 0, wxALIGN_RIGHT, 5);
-
+	// WINGS plot
     pWingsPlot = new mpWindow(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
+    mpScaleX* xAxis = new mpScaleX(wxT("X"), mpALIGN_BOTTOM, true, mpX_NORMAL);
+    mpScaleY* yAxis = new mpScaleY(wxT("Y"), mpALIGN_LEFT, true);
+    pWingsPlot->SetMargins(30, 30, 50, 100);
+	pWingsPlot->SetPos(0.5, 0.5);
+    pWingsPlot->AddLayer(xAxis);
+    pWingsPlot->AddLayer(yAxis);
 
 	pMainOutputSizer->Add(pWingsPlot, 1, wxALL|wxEXPAND, 5);
 
@@ -310,13 +316,13 @@ Matrix IOPanel::getMatrix(){
 void IOPanel::runWings(Matrix& matrix){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	bool absoluteMode = this->pAbsValuesCheckbox->IsChecked();
-
+	// transform matrix
 	float scaleFactor = matrix.sum();
 	matrix = matrix / scaleFactor; /* matrix = A/s */
 	int n = matrix.cols();
 	Matrix matrixIS = (Matrix::Identity(n, n) - matrix).inverse(); /* matrix = (I - S)^(-1) */
 	matrix = matrix * matrixIS; /* matrix = S*[(I - S)^(-1)] = T */
-
+	// calculate value vectors
 	Vector impactVector = {};
 	Vector receptivityVector = {};
 	Vector involvementVector = {};
@@ -333,7 +339,7 @@ void IOPanel::runWings(Matrix& matrix){
 	}
 	involvementVector = impactVector + receptivityVector;
 	roleVector = impactVector - receptivityVector;
-
+	// fill value table
 	long record = 0;
 	long ndx = 0;
 	this->pWingsList->DeleteAllItems();
@@ -344,4 +350,11 @@ void IOPanel::runWings(Matrix& matrix){
 		this->pWingsList->SetItem(ndx, 3, wxString::Format(wxT("%f"), involvementVector(i)));
 		this->pWingsList->SetItem(ndx, 4, wxString::Format(wxT("%f"), roleVector(i)));
 	}
+	// plot WINGS
+	this->pWingsPlot->DelLayer(this->pWingsPlot->GetLayerByName("plot"));
+	std::vector<double> x_DataVector(&involvementVector[0], involvementVector.data()+involvementVector.cols()*involvementVector.rows());
+	std::vector<double> y_DataVector(&roleVector[0], roleVector.data()+roleVector.cols()*roleVector.rows());
+	mpFXYVector* vectorLayer = new mpFXYVector("plot");
+	vectorLayer->SetData(x_DataVector, y_DataVector);
+	this->pWingsPlot->AddLayer(vectorLayer, true);
 }
