@@ -3,6 +3,7 @@
 #ifndef WX_PRECOMP
     #include <wx/wx.h>
 #endif // WX_PRECOMP
+#include <wx/artprov.h>
 #include <wx/notebook.h>
 #include <wx/statline.h>
 #include <wx/listctrl.h>
@@ -33,8 +34,9 @@ namespace ow{
             void AddRelation(RelationshipData* pData);
             bool canAddRelation(RelationshipData* pData);
             wxString getRelationText(RelationshipData* pData);
-            int getWeight(wxString label);
-            int getInfluence(wxString label);
+            int getWeight(wxString& label);
+            int getInfluence(wxString& label);
+            void deleteDependantRelations(wxString label);
         protected:
         private:
             Matrix getMatrix();
@@ -44,6 +46,7 @@ namespace ow{
             void OnUpdate(wxCommandEvent& event);
             void OnAddElement(wxCommandEvent& event);
             void OnAddRelation(wxCommandEvent& event);
+            void OnDeleteRelation(wxCommandEvent& event);
             void OnEnterText(wxCommandEvent& event);
             void OnCalculate(wxCommandEvent& event);
     };

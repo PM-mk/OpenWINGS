@@ -5,7 +5,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
     this->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
     // menus
-    wxMenu* pFileMenu = new wxMenu;
+    wxMenu* pFileMenu = new wxMenu();
     pFileMenu->Append(ID_NEW_PROJECT, wxT("&New project\tCtrl+N"), wxT("Create new WINGS/ALMODES project"));
     pFileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"), wxT("Open project"));
     pFileMenu->Append(wxID_SEPARATOR);
@@ -15,11 +15,15 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pFileMenu->Append(wxID_EXIT, wxT("&Quit\tCtrl+Q"), wxT("Quit this program"));
     pFileMenu->Enable(wxID_SAVE,false);
     pFileMenu->Enable(wxID_SAVEAS,false);
-    wxMenu* pHelpMenu = new wxMenu;
+    wxMenu* pEditMenu = new wxMenu();
+    pEditMenu->Append(wxID_EDIT, wxT("&Edit scales\t Ctrl+E"), wxT("Show scale editor"));
+    pEditMenu->Enable(wxID_EDIT,false);
+    wxMenu* pHelpMenu = new wxMenu();
     pHelpMenu->Append(wxID_ABOUT, wxT("&About...\tF1"), wxT("Show about dialog"));
     // menu bar
     wxMenuBar* pMenuBar = new wxMenuBar();
     pMenuBar->Append(pFileMenu, wxT("&File"));
+    pMenuBar->Append(pEditMenu, wxT("&Edit"));
     pMenuBar->Append(pHelpMenu, wxT("&Help"));
     SetMenuBar(pMenuBar);
 
@@ -55,6 +59,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     Bind(wxEVT_MENU, &MainFrame::OnOpen, this, wxID_OPEN);
     Bind(wxEVT_MENU, &MainFrame::OnSave, this, wxID_SAVE);
     Bind(wxEVT_MENU, &MainFrame::OnSaveAs, this, wxID_SAVEAS);
+    Bind(wxEVT_MENU, &MainFrame::OnEditScales, this, wxID_EDIT);
     Bind(wxEVT_MENU, &MainFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &MainFrame::OnQuit, this, wxID_EXIT);
     // finish frame
@@ -72,8 +77,11 @@ void MainFrame::OnNewFile(wxCommandEvent &event){
     if(!this->IsFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nProceed?")){
         this->SetStatusText(wxT("Unsaved project"));
         delete this->pProjectFile->DetachRoot();
+        this->isFileLoaded = false;
+        this->GetMenuBar()->GetMenu(1)->Enable(wxID_EDIT, true);
         this->SetPanel(this->pControlPanel);
         this->EnableSaving(true);
+        wxPostEvent(this, wxCommandEvent(wxEVT_MENU, wxID_EDIT));
     }
 }
 
@@ -86,8 +94,10 @@ void MainFrame::OnOpen(wxCommandEvent &event){
             if(projectType == "OpenWINGS"){
                 SetStatusText(wxString::Format(wxT("%s - %s"), fileName, projectType));
                 // TODO: load data into controls
+                this->GetMenuBar()->GetMenu(1)->Enable(wxID_EDIT, true);
                 this->SetPanel(this->pControlPanel);
                 this->EnableSaving(true);
+                this->isFileLoaded = true;
             }
             else{
                 ErrMsg(this, wxString::Format(wxT("Unrecognized project type: \"%s\""),
@@ -95,7 +105,7 @@ void MainFrame::OnOpen(wxCommandEvent &event){
             }
         }
         else{
-            ErrMsg(this, wxT("Could not open file.\n\n%s"));
+            // ErrMsg(this, wxT("Could not open file."));
         }
     }
 }
@@ -111,7 +121,7 @@ void MainFrame::EnableSaving(bool enable){
 }
 
 bool MainFrame::IsFileLoaded(){
-    return this->pProjectFile->GetRoot();
+    return this->isFileLoaded;
 }
 
 void MainFrame::OnSave(wxCommandEvent &event){
@@ -125,6 +135,10 @@ void MainFrame::OnSaveAs(wxCommandEvent &event){
 void MainFrame::OnAbout(wxCommandEvent &event){
     AboutFrame* pAboutBox = new AboutFrame(this);
     pAboutBox->ShowModal();
+}
+
+void MainFrame::OnEditScales(wxCommandEvent &event){
+    wxPostEvent(this->pControlPanel->pSidePanel, event);
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event){

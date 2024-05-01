@@ -5,6 +5,7 @@ ScaleDialog::ScaleDialog(wxWindow* parent) :
     wxDialog(parent, wxID_EDIT, "Scale Editor", wxDefaultPosition, wxSize(-1, 300), wxDEFAULT_DIALOG_STYLE){
 
 	this->SetSizeHints(wxDefaultSize, wxDefaultSize);
+	this->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 	wxBoxSizer* bSizer5;
 	bSizer5 = new wxBoxSizer(wxVERTICAL);
 

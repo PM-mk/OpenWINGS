@@ -17,7 +17,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pElemLabel1->Wrap(-1);
 	pElemEditSizer->Add(pElemLabel1, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-	pWeightComboBox = new wxComboBox(pInputPanel, ID_WEIGHT_COMBO, wxT("Weight..."), wxDefaultPosition, wxDefaultSize, 0, NULL, wxTE_PROCESS_ENTER);
+	pWeightComboBox = new wxComboBox(pInputPanel, ID_WEIGHT_COMBO, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxTE_PROCESS_ENTER);
 	pElemEditSizer->Add(pWeightComboBox, 0, wxALL, 5);
 
 	wxStaticText* pElemLabel2 = new wxStaticText(pInputPanel, wxID_ANY, wxT("Name"), wxDefaultPosition, wxDefaultSize, 0);
@@ -57,7 +57,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxSize(400,250), 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
 	pRelaEditSizer->Add(pSourceElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-	pInfluenceComboBox = new wxComboBox(pInputPanel, ID_INFLUENCE_COMBO, wxT("Strength..."), wxDefaultPosition, wxDefaultSize, 0, NULL, wxTE_PROCESS_ENTER);
+	pInfluenceComboBox = new wxComboBox(pInputPanel, ID_INFLUENCE_COMBO, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxTE_PROCESS_ENTER);
 	pRelaEditSizer->Add(pInfluenceComboBox, 0, wxALIGN_CENTER|wxALL, 5);
 
 	pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxSize(400,250), 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
@@ -73,16 +73,18 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainInputSizer->Add(pRelationSizer, 0, wxEXPAND, 5);
 
 	pRelationList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
-
 	pMainInputSizer->Add(pRelationList, 1, wxALL|wxEXPAND, 5);
 
+	wxButton* pBtnDeleteElement = new wxButton(pInputPanel, ID_DEL_ITEM, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+	pBtnDeleteElement->SetBitmap(wxArtProvider::GetBitmap(wxART_DELETE, wxART_BUTTON));
+	pMainInputSizer->Add(pBtnDeleteElement, 0, wxALIGN_RIGHT|wxALL, 0);
 
 	pInputPanel->SetSizer(pMainInputSizer);
 	pInputPanel->Layout();
 	pMainInputSizer->Fit(pInputPanel);
 	pNotebook->AddPage(pInputPanel, wxT("Input"), true);
-	wxPanel* pOutputPanel = new wxPanel(pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 
+	wxPanel* pOutputPanel = new wxPanel(pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 	wxBoxSizer* pMainOutputSizer;
 	pMainOutputSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -118,6 +120,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
     Bind(wxEVT_BUTTON, &IOPanel::OnUpdate, this, ID_UPDATE_ITEMS);
     Bind(wxEVT_BUTTON, &IOPanel::OnAddElement, this, ID_NEW_ELEMENT);
     Bind(wxEVT_BUTTON, &IOPanel::OnAddRelation, this, ID_NEW_RELATION);
+    Bind(wxEVT_BUTTON, &IOPanel::OnDeleteRelation, this, ID_DEL_ITEM);
     Bind(wxEVT_TEXT_ENTER, &IOPanel::OnEnterText, this);
     Bind(wxEVT_BUTTON, &IOPanel::OnCalculate, this, ID_RUN_WINGS);
 
@@ -180,9 +183,18 @@ void IOPanel::OnAddRelation(wxCommandEvent& event){
 	}
 }
 
+void ow::IOPanel::OnDeleteRelation(wxCommandEvent &event){
+	this->pRelationList->Freeze();
+	for(auto i = 0; i<this->pRelationList->GetCount(); i++){
+		if (this->pRelationList->IsSelected(i)){
+			this->pRelationList->Delete(i--);
+		}
+	}
+	this->pRelationList->Thaw();
+}
+
 void IOPanel::AddRelation(RelationshipData* pData){
 	if (this->canAddRelation(pData)){
-		// construct text
 		wxString text = this->getRelationText(pData);
 		this->pRelationList->Append(text, pData);
 	}
@@ -212,16 +224,28 @@ wxString IOPanel::getRelationText(RelationshipData *pData){
 	}
 }
 
-int IOPanel::getWeight(wxString label){
+int IOPanel::getWeight(wxString& label){
     ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	long ndx = ow::findRecord(pControl->pSidePanel->pElementList, 1, label);
 	wxString weightString = pControl->pSidePanel->pElementList->GetItemText(ndx, 0);
     return pControl->scaleStrToInt(weightString, true);
 }
 
-int IOPanel::getInfluence(wxString label){
+int IOPanel::getInfluence(wxString& label){
    ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
    return pControl->scaleStrToInt(label, false);
+}
+
+void IOPanel::deleteDependantRelations(wxString label){
+	RelationshipData* pData = nullptr;
+	this->pRelationList->Freeze();
+	for(auto i = 0; i<this->pRelationList->GetCount(); i++){
+		RelationshipData* pData = dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i));
+		if (pData->source.label == label || pData->target.label == label){
+			this->pRelationList->Delete(i--);
+		}
+	}
+	this->pRelationList->Thaw();
 }
 
 void IOPanel::OnEnterText(wxCommandEvent& event){
@@ -245,6 +269,7 @@ void IOPanel::UpdateCombo(wxComboBox *pCombo, const std::map<int, wxString> &map
 	for(const auto& pair : map){
 		pCombo->Append(pair.second);
     }
+	pCombo->SetSelection(0);
 	pCombo->AutoComplete(pCombo->GetStrings());
 }
 

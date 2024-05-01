@@ -9,21 +9,24 @@ ElementPanel::ElementPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	wxPanel* pElementPanel = new wxPanel(pMainNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
 	wxBoxSizer* pElementSizer;
 	pElementSizer = new wxBoxSizer(wxVERTICAL);
-	pElementList = new wxListView(pElementPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_ASCENDING);
+	pElementList = new wxListView(pElementPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT|wxLC_SORT_ASCENDING|wxLC_SINGLE_SEL);
 	pElementList->InsertColumn(0, wxT("Weight"), 0, 50);
 	pElementList->InsertColumn(1, wxT("Name"), 0, pElementList->GetSize().x-135-50);
-
 	pElementSizer->Add(pElementList, 1, wxALL|wxEXPAND, 5);
-	wxButton* pBtnEditScale = new wxButton(pElementPanel, wxID_EDIT, wxT("Edit Scales"), wxDefaultPosition, wxDefaultSize, 0);
-	pElementSizer->Add(pBtnEditScale, 0, wxALIGN_RIGHT|wxALL, 5);
+
+	wxButton* pBtnDeleteElement = new wxButton(pElementPanel, ID_DEL_ITEM, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+	pBtnDeleteElement->SetBitmap(wxArtProvider::GetBitmap(wxART_DELETE, wxART_BUTTON));
+	pElementSizer->Add(pBtnDeleteElement, 0, wxALIGN_RIGHT|wxALL, 0);
+
 	pElementPanel->SetSizer(pElementSizer);
 	pElementPanel->Layout();
 	pElementSizer->Fit(pElementPanel);
 	pMainNotebook->AddPage(pElementPanel, wxT("Elements"), true);
 
     // send events
-    Bind(wxEVT_BUTTON, &ElementPanel::OnEditScales, this, wxID_EDIT);
+    Bind(wxEVT_MENU, &ElementPanel::OnEditScales, this, wxID_EDIT);
     Bind(wxEVT_BUTTON, &ElementPanel::OnAdd, this, ID_NEW_ELEMENT);
+    Bind(wxEVT_BUTTON, &ElementPanel::OnDelete, this, ID_DEL_ITEM);
 
 	// finish frame
 	pMainSizer->Add(pMainNotebook, 1, wxEXPAND | wxALL, 5);
@@ -49,4 +52,8 @@ void ElementPanel::OnAdd(wxCommandEvent& event){
 }
 
 void ElementPanel::OnDelete(wxCommandEvent& event){
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	long ndx = this->pElementList->GetFirstSelected();
+	pControl->pIOPanel->deleteDependantRelations(this->pElementList->GetItemText(ndx, 1));
+	this->pElementList->DeleteItem(ndx);
 }

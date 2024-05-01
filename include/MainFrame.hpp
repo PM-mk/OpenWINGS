@@ -18,6 +18,7 @@ namespace ow{
             ControlPanel* pControlPanel;
             wxPanel* pStartPanel;
             wxXmlDocument* pProjectFile;
+            bool isFileLoaded = false;
             void SetPanel(wxPanel* pPanel);
             void EnableSaving(bool enable);
             bool IsFileLoaded();
@@ -28,5 +29,6 @@ namespace ow{
             void OnSaveAs(wxCommandEvent& event);
             void OnQuit(wxCommandEvent& event);
             void OnAbout(wxCommandEvent& event);
+            void OnEditScales(wxCommandEvent& event);
     };
 } // namespace ow
