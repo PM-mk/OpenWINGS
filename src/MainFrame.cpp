@@ -3,6 +3,7 @@ using namespace ow;
 
 MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultPosition, wxSize(1366,768)){
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
+    this->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
     // menus
     wxMenu* pFileMenu = new wxMenu;
     pFileMenu->Append(ID_NEW_PROJECT, wxT("&New project\tCtrl+N"), wxT("Create new WINGS/ALMODES project"));
@@ -33,19 +34,17 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pStartSizer->Fit(pStartPanel);
     wxStaticText* pStartTxt = new wxStaticText(pStartPanel, wxID_ANY, wxT("Start"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-    pStartSizer->Add(pStartTxt, 1, wxEXPAND, 5);
-    pMainSizer->Add(pStartPanel, 1, wxEXPAND, 5);
+    pStartSizer->Add(pStartTxt, 1, wxEXPAND, 0);
+    pMainSizer->Add(pStartPanel, 1, wxEXPAND, 0);
 
     pControlPanel = new ControlPanel(this);
-    pMainSizer->Add(pControlPanel, 1, wxEXPAND, 5);
+    pMainSizer->Add(pControlPanel, 1, wxEXPAND, 0);
     pControlPanel->Hide();
     pStartPanel->Show();
     // panels - end
 
     // xml document
     pProjectFile = new wxXmlDocument();
-    // wxXmlNode* newRoot = new wxXmlNode();
-    // this->pProjectFile->SetRoot(newRoot);
 
     SetSizer(pMainSizer);
     // status bar
@@ -86,7 +85,7 @@ void MainFrame::OnOpen(wxCommandEvent &event){
             wxString projectType = this->pProjectFile->GetRoot()->GetAttribute("type");
             if(projectType == "OpenWINGS"){
                 SetStatusText(wxString::Format(wxT("%s - %s"), fileName, projectType));
-                // TODO: further work mode handling here, load data into controls
+                // TODO: load data into controls
                 this->SetPanel(this->pControlPanel);
                 this->EnableSaving(true);
             }

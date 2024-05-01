@@ -82,7 +82,6 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainInputSizer->Fit(pInputPanel);
 	pNotebook->AddPage(pInputPanel, wxT("Input"), true);
 	wxPanel* pOutputPanel = new wxPanel(pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-	pOutputPanel->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 
 	wxBoxSizer* pMainOutputSizer;
 	pMainOutputSizer = new wxBoxSizer(wxVERTICAL);
@@ -98,12 +97,9 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 
 	pMainOutputSizer->Add(pRunBtnSizer, 0, wxALIGN_RIGHT, 5);
 
-	// wxStaticText* m_staticText8 = new wxStaticText(pOutputPanel, wxID_ANY, wxT("Output here"), wxDefaultPosition, wxDefaultSize, 0);
-	// m_staticText8->Wrap(-1);
-	// pMainOutputSizer->Add(m_staticText8, 1, wxALIGN_CENTER|wxALL, 5);
+    pWingsPlot = new mpWindow(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
 
-    pWingsPlot = new mpWindow(pOutputPanel, -1, wxPoint(0,0), wxSize(100,100), wxSUNKEN_BORDER);
-	pMainOutputSizer->Add(pWingsPlot, 1, wxALIGN_CENTER|wxALL, 5);
+	pMainOutputSizer->Add(pWingsPlot, 1, wxALL|wxEXPAND, 5);
 
 	pWingsList = new wxListView(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
 	pWingsList->InsertColumn(0, wxT("Label"), 0, 350);

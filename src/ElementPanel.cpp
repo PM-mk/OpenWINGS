@@ -42,8 +42,11 @@ void ElementPanel::OnEditScales(wxCommandEvent& event){
 	pScaleDialog->ShowModal();
 }
 
-void ElementPanel::OnAdd(wxCommandEvent &event){
+void ElementPanel::OnAdd(wxCommandEvent& event){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
     long ndx = this->pElementList->InsertItem(0, pControl->pIOPanel->pWeightComboBox->GetValue());
     this->pElementList->SetItem(ndx, 1, pControl->pIOPanel->pElemNameInput->GetValue().Trim().Trim(false));
+}
+
+void ElementPanel::OnDelete(wxCommandEvent& event){
 }

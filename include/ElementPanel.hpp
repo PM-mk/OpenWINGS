@@ -19,6 +19,6 @@ namespace ow{
         // handlers:
             void OnEditScales(wxCommandEvent& event);
             void OnAdd(wxCommandEvent& event);
-
+            void OnDelete(wxCommandEvent& event);
     };
 } // namespace ow
