@@ -310,7 +310,6 @@ Matrix IOPanel::getMatrix(){
 
 void IOPanel::runWings(Matrix& matrix){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
-	bool absoluteMode = this->pAbsValuesCheckbox->IsChecked();
 	// transform matrix
 	float scaleFactor = matrix.sum();
 	matrix = matrix / scaleFactor; /* matrix = A/s */
