@@ -100,12 +100,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainOutputSizer->Add(pRunBtnSizer, 0, wxALIGN_RIGHT, 5);
 	// WINGS plot
     pWingsPlot = new mpWindow(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
-    mpScaleX* xAxis = new mpScaleX(wxT("X"), mpALIGN_BOTTOM, true, mpX_NORMAL);
-    mpScaleY* yAxis = new mpScaleY(wxT("Y"), mpALIGN_LEFT, true);
-    pWingsPlot->SetMargins(30, 30, 50, 100);
-	pWingsPlot->SetPos(0.5, 0.5);
-    pWingsPlot->AddLayer(xAxis);
-    pWingsPlot->AddLayer(yAxis);
+    pWingsPlot->SetMargins(30, 30, 30, 30);
 
 	pMainOutputSizer->Add(pWingsPlot, 1, wxALL|wxEXPAND, 5);
 
@@ -327,15 +322,18 @@ void IOPanel::runWings(Matrix& matrix){
 	Vector receptivityVector = {};
 	Vector involvementVector = {};
 	Vector roleVector = {};
+	wxString labelPrefix = wxEmptyString;
 
 	if (this->pAbsValuesCheckbox->IsChecked()){ /* if mode = absolute values */
 		matrix = matrix.cwiseAbs();
 		impactVector = matrix.rowwise().sum();
 		receptivityVector = matrix.colwise().sum();
+		labelPrefix = wxT("Absolute");
 	}
 	else{
 		impactVector = matrix.rowwise().sum().cwiseAbs();
 		receptivityVector = matrix.colwise().sum().cwiseAbs();
+		labelPrefix = wxT("Relative");
 	}
 	involvementVector = impactVector + receptivityVector;
 	roleVector = impactVector - receptivityVector;
@@ -343,6 +341,7 @@ void IOPanel::runWings(Matrix& matrix){
 	long record = 0;
 	long ndx = 0;
 	this->pWingsList->DeleteAllItems();
+	this->pWingsList->Freeze();
 	for (auto i = 0; i < n; i++){
 		ndx = this->pWingsList->InsertItem(record++, pControl->pSidePanel->pElementList->GetItemText(i, 1));
 		this->pWingsList->SetItem(ndx, 1, wxString::Format(wxT("%f"), impactVector(i)));
@@ -350,11 +349,22 @@ void IOPanel::runWings(Matrix& matrix){
 		this->pWingsList->SetItem(ndx, 3, wxString::Format(wxT("%f"), involvementVector(i)));
 		this->pWingsList->SetItem(ndx, 4, wxString::Format(wxT("%f"), roleVector(i)));
 	}
+	this->pWingsList->Thaw();
 	// plot WINGS
-	this->pWingsPlot->DelLayer(this->pWingsPlot->GetLayerByName("plot"));
-	std::vector<double> x_DataVector(&involvementVector[0], involvementVector.data()+involvementVector.cols()*involvementVector.rows());
-	std::vector<double> y_DataVector(&roleVector[0], roleVector.data()+roleVector.cols()*roleVector.rows());
-	mpFXYVector* vectorLayer = new mpFXYVector("plot");
-	vectorLayer->SetData(x_DataVector, y_DataVector);
-	this->pWingsPlot->AddLayer(vectorLayer, true);
+	this->pWingsPlot->DelAllLayers(true);
+    mpScaleX* xAxis = new mpScaleX(labelPrefix + wxT(" involvement"), mpALIGN_BOTTOM, true, mpX_NORMAL);
+    mpScaleY* yAxis = new mpScaleY(labelPrefix + wxT(" role"), mpALIGN_LEFT, true);
+    pWingsPlot->AddLayer(xAxis);
+    pWingsPlot->AddLayer(yAxis);
+	std::vector<double> xDataVector = {};
+	std::vector<double> yDataVector = {};
+	mpFXYVector* pVectorLayer = nullptr;
+	for (auto i = 0; i < n; i++){
+		xDataVector = {involvementVector[i]};
+		yDataVector = {roleVector[i]};
+		pVectorLayer = new mpFXYVector(pControl->pSidePanel->pElementList->GetItemText(i, 1));
+		pVectorLayer->SetData(xDataVector, yDataVector);
+		this->pWingsPlot->AddLayer(pVectorLayer, false);
+	}
+	this->pWingsPlot->UpdateAll();
 }

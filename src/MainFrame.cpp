@@ -16,7 +16,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pFileMenu->Enable(wxID_SAVE,false);
     pFileMenu->Enable(wxID_SAVEAS,false);
     wxMenu* pEditMenu = new wxMenu();
-    pEditMenu->Append(wxID_EDIT, wxT("&Edit scales\t Ctrl+E"), wxT("Show scale editor"));
+    pEditMenu->Append(wxID_EDIT, wxT("&Edit scales\tCtrl+E"), wxT("Show scale editor"));
     pEditMenu->Enable(wxID_EDIT,false);
     wxMenu* pHelpMenu = new wxMenu();
     pHelpMenu->Append(wxID_ABOUT, wxT("&About...\tF1"), wxT("Show about dialog"));
