@@ -52,8 +52,17 @@ void ElementPanel::OnAdd(wxCommandEvent& event){
 }
 
 void ElementPanel::OnDelete(wxCommandEvent& event){
-	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	long ndx = this->pElementList->GetFirstSelected();
-	pControl->pIOPanel->deleteDependantRelations(this->pElementList->GetItemText(ndx, 1));
-	this->pElementList->DeleteItem(ndx);
+	if(ndx != wxNOT_FOUND){
+		wxString elementLabel = this->pElementList->GetItemText(ndx, 1);
+		if(Ask(this, wxString::Format(wxT("Are you sure you want to delete element \"%s\"?\n%s"), elementLabel,
+				wxT("All relations that depend on this element will be deleted as well."))))
+		{
+			ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+			pControl->pIOPanel->deleteDependantRelations(elementLabel);
+			pControl->pIOPanel->pSourceElementsList->Delete(pControl->pIOPanel->pSourceElementsList->FindString(elementLabel));
+			pControl->pIOPanel->pTargetElementsList->Delete(pControl->pIOPanel->pTargetElementsList->FindString(elementLabel));
+			this->pElementList->DeleteItem(ndx);
+		}
+	}
 }
