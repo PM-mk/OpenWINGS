@@ -67,51 +67,50 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     Layout();
 }
 
-void MainFrame::SetPanel(wxPanel* pPanel){
+void MainFrame::setPanel(wxPanel* pPanel){
     pPanel->GetContainingSizer()->ShowItems(false);
     pPanel->Show();
     pPanel->GetContainingSizer()->Layout();
 }
 
 void MainFrame::OnNewFile(wxCommandEvent &event){
-    if(!this->IsFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nProceed?")){
+    if(!this->isFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nProceed?")){
         this->SetStatusText(wxT("Unsaved project"));
         delete this->pProjectFile->DetachRoot();
-        this->isFileLoaded = false;
+        this->fileName.clear();
         this->GetMenuBar()->GetMenu(1)->Enable(wxID_EDIT, true);
-        this->SetPanel(this->pControlPanel);
-        this->EnableSaving(true);
+        this->setPanel(this->pControlPanel);
+        this->enableSaving(true);
         wxPostEvent(this, wxCommandEvent(wxEVT_MENU, wxID_EDIT));
     }
 }
 
 void MainFrame::OnOpen(wxCommandEvent &event){
-    wxString fileName = wxLoadFileSelector(wxT("a project"), "XML", wxEmptyString, this);
-    if(!fileName.empty()){
+    this->fileName = wxLoadFileSelector(wxT("a project"), "XML", wxEmptyString, this);
+    if(!!fileName){
         bool loadResult = pProjectFile->Load(fileName);
         if(loadResult){
             wxString projectType = this->pProjectFile->GetRoot()->GetAttribute("type");
             if(projectType == "OpenWINGS"){
-                SetStatusText(wxString::Format(wxT("%s - %s"), fileName, projectType));
-                // TODO: load data into controls
+                this->SetStatusText(wxString::Format(wxT("Loaded: %s"), this->fileName));
+                this->loadData();
                 this->GetMenuBar()->GetMenu(1)->Enable(wxID_EDIT, true);
-                this->SetPanel(this->pControlPanel);
-                this->EnableSaving(true);
-                this->isFileLoaded = true;
+                this->setPanel(this->pControlPanel);
+                this->enableSaving(true);
             }
             else{
-                ErrMsg(this, wxString::Format(wxT("Unrecognized project type: \"%s\""),
-                    projectType));
+                ErrMsg(this, wxT("Unrecognized project type"));
+                this->fileName.clear();
             }
         }
         else{
-            // ErrMsg(this, wxT("Could not open file."));
+            this->fileName.clear();
         }
     }
 }
 
-void MainFrame::EnableSaving(bool enable){
-    if(this->IsFileLoaded()){
+void MainFrame::enableSaving(bool enable){
+    if(this->isFileLoaded()){
         this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVE, enable);
     }
     else{
@@ -120,16 +119,82 @@ void MainFrame::EnableSaving(bool enable){
     this->GetMenuBar()->GetMenu(0)->Enable(wxID_SAVEAS, enable);
 }
 
-bool MainFrame::IsFileLoaded(){
-    return this->isFileLoaded;
+void MainFrame::loadData(){
+    //implement this
+}
+
+void MainFrame::dumpData(){
+    // set up file contents
+    wxXmlNode* pRoot = new wxXmlNode(wxXML_ELEMENT_NODE, wxT("project"));
+    this->pProjectFile->SetRoot(pRoot);
+    pRoot->AddAttribute(wxT("type"), wxT("OpenWINGS"));
+    wxXmlNode* pScales = new wxXmlNode(wxXML_ELEMENT_NODE, wxT("scales"));
+    pRoot->AddChild(pScales);
+    wxXmlNode* pWeights = new wxXmlNode(wxXML_ELEMENT_NODE, wxT("weights"));
+    pScales->AddChild(pWeights);
+    wxXmlNode* pInfluences = new wxXmlNode(wxXML_ELEMENT_NODE, wxT("influences"));
+    pScales->AddChild(pInfluences);
+    wxXmlNode* pElements = new wxXmlNode(wxXML_ELEMENT_NODE, wxT("elements"));
+    pRoot->AddChild(pElements);
+    wxXmlNode* pRelations = new wxXmlNode(wxXML_ELEMENT_NODE, wxT("relations"));
+    pRoot->AddChild(pRelations);
+    // dump scales
+    wxXmlNode* pNewNode = nullptr;
+    for (const auto& pair : this->pControlPanel->weightsMap){
+        pNewNode = new wxXmlNode(pWeights, wxXML_ELEMENT_NODE, wxT("weight"), wxEmptyString, new wxXmlAttribute(wxT("name"), pair.second));
+        pNewNode->AddAttribute(wxT("val"), wxString::Format(wxT("%i"), pair.first));
+    }
+    for (const auto& pair : this->pControlPanel->influencesMap){
+        pNewNode = new wxXmlNode(pInfluences, wxXML_ELEMENT_NODE, wxT("strength"), wxEmptyString, new wxXmlAttribute(wxT("name"), pair.second));
+        pNewNode->AddAttribute(wxT("val"), wxString::Format(wxT("%i"), pair.first));
+    }
+    // dump elements
+	int elementCount = this->pControlPanel->pSidePanel->pElementList->GetItemCount();
+    wxString value = wxEmptyString;
+    wxString name = wxEmptyString;
+	for(auto i = 0; i<elementCount; i++){
+        name = this->pControlPanel->pSidePanel->pElementList->GetItemText(i, 1);
+		value = wxString::Format(wxT("%i"),  this->pControlPanel->scaleStrToInt(this->pControlPanel->pSidePanel->pElementList->GetItemText(i, 0), true));
+        pNewNode = new wxXmlNode(pElements, wxXML_ELEMENT_NODE, wxT("element"), wxEmptyString, new wxXmlAttribute(wxT("name"), name));
+        pNewNode->AddAttribute(wxT("weight"), value);
+	}
+    // dump relations
+	int relationCount = this->pControlPanel->pIOPanel->pRelationList->GetCount();
+	RelationshipData* pData = nullptr;
+	for(int i = 0; i<relationCount; i++){
+		pData = dynamic_cast<RelationshipData*>(this->pControlPanel->pIOPanel->pRelationList->GetClientObject(i));
+        pNewNode = new wxXmlNode(pRelations, wxXML_ELEMENT_NODE, wxT("relation"), wxEmptyString, new wxXmlAttribute(wxT("source"), pData->source.label));
+        pNewNode->AddAttribute(wxT("strength"), wxString::Format(wxT("%i"), pData->influenceValue));
+        pNewNode->AddAttribute(wxT("target"), pData->target.label);
+	}
+}
+
+bool MainFrame::isFileLoaded(){
+    return !!this->fileName;
 }
 
 void MainFrame::OnSave(wxCommandEvent &event){
-    ErrMsg(this, "Not yet implemented :(");
+    this->dumpData();
+    if (this->pProjectFile->Save(this->fileName)){
+        this->SetStatusText(wxString::Format(wxT("Saved: %s"), this->fileName));
+    }
+    else{
+        ErrMsg(this, wxT("Couldn't save file."));
+    }
 }
 
 void MainFrame::OnSaveAs(wxCommandEvent &event){
-    ErrMsg(this, "Not yet implemented :(");
+    wxString saveFileName = wxSaveFileSelector(wxT("a project"), "XML", wxEmptyString, this);
+    if(!!saveFileName){
+        this->dumpData();
+        if (this->pProjectFile->Save(saveFileName)){
+            this->fileName = saveFileName;
+            this->SetStatusText(wxString::Format(wxT("Saved: %s"), this->fileName));
+        }
+        else{
+            ErrMsg(this, wxT("Couldn't save file."));
+        }
+    }
 }
 
 void MainFrame::OnAbout(wxCommandEvent &event){
@@ -142,7 +207,7 @@ void MainFrame::OnEditScales(wxCommandEvent &event){
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event){
-    if(!this->IsFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nAre you sure you want to exit?")){
+    if(!this->isFileLoaded() || Ask(this, "Any unsaved changes will be lost.\nAre you sure you want to exit?")){
         Close(true);
     }
 }

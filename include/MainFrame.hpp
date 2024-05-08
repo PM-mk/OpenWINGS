@@ -18,10 +18,12 @@ namespace ow{
             ControlPanel* pControlPanel;
             wxPanel* pStartPanel;
             wxXmlDocument* pProjectFile;
-            bool isFileLoaded = false;
-            void SetPanel(wxPanel* pPanel);
-            void EnableSaving(bool enable);
-            bool IsFileLoaded();
+            wxString fileName = wxEmptyString;
+            void setPanel(wxPanel* pPanel);
+            void enableSaving(bool enable);
+            void loadData();
+            void dumpData();
+            bool isFileLoaded();
         // handlers:
             void OnNewFile(wxCommandEvent& event);
             void OnOpen(wxCommandEvent& event);

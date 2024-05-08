@@ -35,7 +35,8 @@ ControlPanel::ControlPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 }
 
 int ControlPanel::scaleStrToInt(const wxString& label, bool mode){
-	auto map = (mode == true) ? this->weightsMap : this->influencesMap;
+	// mode: true - weights, false - influences
+	auto map = (mode) ? this->weightsMap : this->influencesMap;
 	for(const auto& it : map){
 		if(it.second == label){return it.first;}
 	}
