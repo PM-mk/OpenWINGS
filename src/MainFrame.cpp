@@ -120,7 +120,78 @@ void MainFrame::enableSaving(bool enable){
 }
 
 void MainFrame::loadData(){
-    //implement this
+    wxXmlNode* pRoot = this->pProjectFile->GetRoot();
+    if(pRoot){
+        // get major nodes
+        wxXmlNode* pScales = pRoot->GetChildren();
+        wxXmlNode* pWeights = pScales->GetChildren();
+        wxXmlNode* pInfluences = pWeights->GetNext();
+        wxXmlNode* pElements = pScales->GetNext();
+        wxXmlNode* pRelations = pElements->GetNext();
+        if(pWeights && pInfluences && pElements && pRelations){
+            wxXmlNode* pNode = pWeights->GetChildren(); /* get weights */
+            if(pNode){
+                this->pControlPanel->weightsMap.clear();
+                while(pNode){
+                    this->pControlPanel->weightsMap.insert({wxAtoi(pNode->GetAttribute("val")), pNode->GetAttribute("name")});
+                    pNode = pNode->GetNext();
+                }
+            }
+            pNode = pInfluences->GetChildren(); /* get strengths */
+            if(pNode){
+                this->pControlPanel->influencesMap.clear();
+                while(pNode){
+                    this->pControlPanel->influencesMap.insert({wxAtoi(pNode->GetAttribute("val")), pNode->GetAttribute("name")});
+                    pNode = pNode->GetNext();
+                }
+            }
+            this->pControlPanel->pIOPanel->pSourceElementsList->Clear();
+            this->pControlPanel->pIOPanel->pTargetElementsList->Clear();
+            wxCommandEvent event = wxCommandEvent(wxEVT_BUTTON, ID_UPDATE_ITEMS);
+            wxPostEvent(this->pControlPanel->pIOPanel, event); /* update combo boxes */
+            pNode = pElements->GetChildren(); /* get elements */
+            if(pNode){
+                this->pControlPanel->pSidePanel->pElementList->DeleteAllItems();
+                wxString weightLabel = wxEmptyString;
+                wxString elementLabel = wxEmptyString;
+                long ndx = 0;
+                this->pControlPanel->pSidePanel->pElementList->Freeze();
+                while(pNode){
+                    weightLabel = (*this->pControlPanel->weightsMap.find(wxAtoi(pNode->GetAttribute("weight")))).second;
+                    elementLabel = pNode->GetAttribute("name");
+                    ndx = this->pControlPanel->pSidePanel->pElementList->InsertItem(0, weightLabel);
+                    this->pControlPanel->pSidePanel->pElementList->SetItem(ndx, 1, elementLabel);
+                    this->pControlPanel->pIOPanel->AddElement(elementLabel);
+                    pNode = pNode->GetNext();
+                }
+                this->pControlPanel->pSidePanel->pElementList->Thaw();
+            }
+            pNode = pRelations->GetChildren(); /* get relations */
+            if(pNode){
+                wxString sourceLabel = wxEmptyString;
+                wxString targetLabel = wxEmptyString;
+                RelationshipData* pData = nullptr;
+                int strength = 0;
+                this->pControlPanel->pIOPanel->pRelationList->Freeze();
+                while(pNode){
+                    sourceLabel = pNode->GetAttribute("source");
+                    targetLabel = pNode->GetAttribute("target");
+                    strength = wxAtoi(pNode->GetAttribute("strength"));
+					pData = new RelationshipData(
+						RelationshipData::CreateItem(this->pControlPanel->pIOPanel->getWeight(sourceLabel), sourceLabel),
+						strength,
+						RelationshipData::CreateItem(this->pControlPanel->pIOPanel->getWeight(targetLabel), targetLabel)
+					);
+					this->pControlPanel->pIOPanel->AddRelation(pData);
+                    pNode = pNode->GetNext();
+                }
+                this->pControlPanel->pIOPanel->pRelationList->Thaw();
+            }
+        }
+        else{
+            ErrMsg(this, wxT("Major XML nodes are missing from the file, data could not be loaded."));
+        }
+    }
 }
 
 void MainFrame::dumpData(){
@@ -203,7 +274,7 @@ void MainFrame::OnAbout(wxCommandEvent &event){
 }
 
 void MainFrame::OnEditScales(wxCommandEvent &event){
-    wxPostEvent(this->pControlPanel->pSidePanel, event);
+    wxPostEvent(this->pControlPanel->pSidePanel, event); /* send event to display scale editor */
 }
 
 void MainFrame::OnQuit(wxCommandEvent &event){
