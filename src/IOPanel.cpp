@@ -35,34 +35,36 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	wxStaticLine* pStaticLine = new wxStaticLine(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
 	pMainInputSizer->Add(pStaticLine, 0, wxEXPAND | wxALL, 5);
 
-	wxBoxSizer* pRelationSizer;
-	pRelationSizer = new wxBoxSizer(wxHORIZONTAL);
+	wxBoxSizer* pRelationSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	wxGridSizer* pRelaEditSizer;
-	pRelaEditSizer = new wxFlexGridSizer(2, 3, 0, 0);
+	wxBoxSizer* pRelaEditSizer1 = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer* pRelaEditSizer2 = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer* pRelaEditSizer3 = new wxBoxSizer(wxVERTICAL);
 
 	wxStaticText* pRelLabel1 = new wxStaticText(pInputPanel, wxID_ANY, wxT("System element(s)"), wxDefaultPosition, wxDefaultSize, 0);
 	pRelLabel1->Wrap(-1);
-	pRelaEditSizer->Add(pRelLabel1, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	pRelaEditSizer1->Add(pRelLabel1, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
 	wxStaticText* pRelLabel2 = new wxStaticText(pInputPanel, wxID_ANY, wxT("influence with strength"), wxDefaultPosition, wxDefaultSize, 0);
 	pRelLabel2->Wrap(-1);
-	pRelaEditSizer->Add(pRelLabel2, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	pRelaEditSizer2->Add(pRelLabel2, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
 	wxStaticText* pRelLabel3 = new wxStaticText(pInputPanel, wxID_ANY, wxT("the target element(s)"), wxDefaultPosition, wxDefaultSize, 0);
 	pRelLabel3->Wrap(-1);
-	pRelaEditSizer->Add(pRelLabel3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	pRelaEditSizer3->Add(pRelLabel3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
 	pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
-	pRelaEditSizer->Add(pSourceElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
+	pRelaEditSizer1->Add(pSourceElementsList, 1, wxALL|wxEXPAND, 5);
 
 	pInfluenceComboBox = new wxComboBox(pInputPanel, ID_INFLUENCE_COMBO, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxTE_PROCESS_ENTER);
-	pRelaEditSizer->Add(pInfluenceComboBox, 0, wxALIGN_CENTER|wxALL, 5);
+	pRelaEditSizer2->Add(pInfluenceComboBox, 0, wxALIGN_CENTER|wxALL, 5);
 
 	pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
-	pRelaEditSizer->Add(pTargetElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
+	pRelaEditSizer3->Add(pTargetElementsList, 1, wxALL|wxEXPAND, 5);
 
-	pRelationSizer->Add(pRelaEditSizer, 1, wxEXPAND, 5);
+	pRelationSizer->Add(pRelaEditSizer1, 1, wxEXPAND, 5);
+	pRelationSizer->Add(pRelaEditSizer2, 1, wxEXPAND, 5);
+	pRelationSizer->Add(pRelaEditSizer3, 1, wxEXPAND, 5);
 
 	wxButton* pBtnAddRelation = new wxButton(pInputPanel, ID_NEW_RELATION, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0);
 	pRelationSizer->Add(pBtnAddRelation, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
