@@ -30,7 +30,6 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	wxButton* pBtnAddElement = new wxButton(pInputPanel, ID_NEW_ELEMENT, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0);
 	pElemEditSizer->Add(pBtnAddElement, 0, wxALL, 5);
 
-
 	pMainInputSizer->Add(pElemEditSizer, 0, wxEXPAND, 5);
 
 	wxStaticLine* pStaticLine = new wxStaticLine(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
@@ -54,23 +53,21 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pRelLabel3->Wrap(-1);
 	pRelaEditSizer->Add(pRelLabel3, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
 
-	pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxSize(400,250), 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
-	pRelaEditSizer->Add(pSourceElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+	pSourceElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
+	pRelaEditSizer->Add(pSourceElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
 
 	pInfluenceComboBox = new wxComboBox(pInputPanel, ID_INFLUENCE_COMBO, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, wxTE_PROCESS_ENTER);
 	pRelaEditSizer->Add(pInfluenceComboBox, 0, wxALIGN_CENTER|wxALL, 5);
 
-	pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxSize(400,250), 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
-	pRelaEditSizer->Add(pTargetElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
-
+	pTargetElementsList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
+	pRelaEditSizer->Add(pTargetElementsList, 1, wxALIGN_CENTER_HORIZONTAL|wxALL|wxEXPAND, 5);
 
 	pRelationSizer->Add(pRelaEditSizer, 1, wxEXPAND, 5);
 
 	wxButton* pBtnAddRelation = new wxButton(pInputPanel, ID_NEW_RELATION, wxT("Add"), wxDefaultPosition, wxDefaultSize, 0);
 	pRelationSizer->Add(pBtnAddRelation, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-
-	pMainInputSizer->Add(pRelationSizer, 0, wxEXPAND, 5);
+	pMainInputSizer->Add(pRelationSizer, 1, wxEXPAND, 5);
 
 	pRelationList = new wxListBox(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_EXTENDED|wxLB_NEEDED_SB);
 	pMainInputSizer->Add(pRelationList, 1, wxALL|wxEXPAND, 5);
@@ -83,38 +80,67 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pInputPanel->Layout();
 	pMainInputSizer->Fit(pInputPanel);
 	pNotebook->AddPage(pInputPanel, wxT("Input"), true);
+	// Wings page
+	wxPanel* pWingsPanel = new wxPanel(pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	wxBoxSizer* pMainWingsSizer;
+	pMainWingsSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxPanel* pOutputPanel = new wxPanel(pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-	wxBoxSizer* pMainOutputSizer;
-	pMainOutputSizer = new wxBoxSizer(wxVERTICAL);
+	wxBoxSizer* pRunWingsBtnSizer;
+	pRunWingsBtnSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	wxBoxSizer* pRunBtnSizer;
-	pRunBtnSizer = new wxBoxSizer(wxHORIZONTAL);
+	pAbsValuesCheckbox = new wxCheckBox(pWingsPanel, wxID_ANY, wxT("Absolute values"), wxDefaultPosition, wxDefaultSize, 0);
+	pRunWingsBtnSizer->Add(pAbsValuesCheckbox, 0, wxALL|wxEXPAND, 5);
 
-	pAbsValuesCheckbox = new wxCheckBox(pOutputPanel, wxID_ANY, wxT("Absolute values"), wxDefaultPosition, wxDefaultSize, 0);
-	pRunBtnSizer->Add(pAbsValuesCheckbox, 0, wxALL|wxEXPAND, 5);
+	wxButton* pBtnCalculateWings = new wxButton(pWingsPanel, ID_RUN_WINGS, wxT("Run WINGS"), wxDefaultPosition, wxDefaultSize, 0);
+	pRunWingsBtnSizer->Add(pBtnCalculateWings, 0, wxALL|wxEXPAND, 5);
 
-	wxButton* pBtnCalculate = new wxButton(pOutputPanel, ID_RUN_WINGS, wxT("Run WINGS"), wxDefaultPosition, wxDefaultSize, 0);
-	pRunBtnSizer->Add(pBtnCalculate, 0, wxALL|wxEXPAND, 5);
-
-	pMainOutputSizer->Add(pRunBtnSizer, 0, wxALIGN_RIGHT, 5);
+	pMainWingsSizer->Add(pRunWingsBtnSizer, 0, wxALIGN_RIGHT, 5);
 	// WINGS plot
-    pWingsPlot = new mpWindow(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
+    pWingsPlot = new mpWindow(pWingsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
     pWingsPlot->SetMargins(30, 30, 30, 30);
 
-	pMainOutputSizer->Add(pWingsPlot, 1, wxALL|wxEXPAND, 5);
+	pMainWingsSizer->Add(pWingsPlot, 1, wxALL|wxEXPAND, 5);
 
-	pWingsList = new wxListView(pOutputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
-	pWingsList->InsertColumn(0, wxT("Label"), 0, 350);
+	pWingsList = new wxListView(pWingsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	pWingsList->InsertColumn(0, wxT("Label"), 0, 225);
 	pWingsList->InsertColumn(1, wxT("Impact"));
 	pWingsList->InsertColumn(2, wxT("Receptivity"));
 	pWingsList->InsertColumn(3, wxT("Involvement"));
 	pWingsList->InsertColumn(4, wxT("Role"));
-	pMainOutputSizer->Add(pWingsList, 1, wxALL|wxEXPAND, 5);
-	pOutputPanel->SetSizer(pMainOutputSizer);
-	pOutputPanel->Layout();
-	pMainOutputSizer->Fit(pOutputPanel);
-	pNotebook->AddPage(pOutputPanel, wxT("WINGS"), false);
+	pMainWingsSizer->Add(pWingsList, 1, wxALL|wxEXPAND, 5);
+	pWingsPanel->SetSizer(pMainWingsSizer);
+	pWingsPanel->Layout();
+	pMainWingsSizer->Fit(pWingsPanel);
+	pNotebook->AddPage(pWingsPanel, wxT("WINGS"), false);
+	// Almodes page
+	wxPanel* pAlmodesPanel = new wxPanel(pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	wxBoxSizer* pMainAlmodesSizer;
+	pMainAlmodesSizer = new wxBoxSizer(wxVERTICAL);
+
+	wxBoxSizer* pRunAlmodesBtnSizer;
+	pRunAlmodesBtnSizer = new wxBoxSizer(wxHORIZONTAL);
+
+	wxButton* pBtnCalculateAlmodes = new wxButton(pAlmodesPanel, ID_RUN_ALMODES, wxT("Run ALMODES"), wxDefaultPosition, wxDefaultSize, 0);
+	pRunAlmodesBtnSizer->Add(pBtnCalculateAlmodes, 0, wxALL|wxEXPAND, 5);
+
+	pMainAlmodesSizer->Add(pRunAlmodesBtnSizer, 0, wxALIGN_RIGHT, 5);
+	// ALMODES plot
+    pAlmodesPlot = new mpWindow(pAlmodesPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
+    pAlmodesPlot->SetMargins(30, 30, 30, 30);
+
+	pMainAlmodesSizer->Add(pAlmodesPlot, 1, wxALL|wxEXPAND, 5);
+
+	pAlmodesList = new wxListView(pAlmodesPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	pAlmodesList->InsertColumn(0, wxT("Label"), 0, 225);
+	pAlmodesList->InsertColumn(1, wxT("Impact"));
+	pAlmodesList->InsertColumn(2, wxT("Receptivity"));
+	pAlmodesList->InsertColumn(3, wxT("Involvement"));
+	pAlmodesList->InsertColumn(4, wxT("Role"));
+	pMainAlmodesSizer->Add(pAlmodesList, 1, wxALL|wxEXPAND, 5);
+	pAlmodesPanel->SetSizer(pMainAlmodesSizer);
+	pAlmodesPanel->Layout();
+	pMainAlmodesSizer->Fit(pAlmodesPanel);
+	pNotebook->AddPage(pAlmodesPanel, wxT("ALMODES"), false);
 
 	pMainSizer->Add(pNotebook, 1, wxEXPAND | wxALL, 5);
 	// send events
@@ -123,7 +149,8 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
     Bind(wxEVT_BUTTON, &IOPanel::OnAddRelation, this, ID_NEW_RELATION);
     Bind(wxEVT_BUTTON, &IOPanel::OnDeleteRelation, this, ID_DEL_ITEM);
     Bind(wxEVT_TEXT_ENTER, &IOPanel::OnEnterText, this);
-    Bind(wxEVT_BUTTON, &IOPanel::OnCalculate, this, ID_RUN_WINGS);
+    Bind(wxEVT_BUTTON, &IOPanel::OnCalculateWings, this, ID_RUN_WINGS);
+    Bind(wxEVT_BUTTON, &IOPanel::OnCalculateAlmodes, this, ID_RUN_ALMODES);
 
 	this->SetSizer(pMainSizer);
 	this->Layout();
@@ -274,7 +301,7 @@ void IOPanel::UpdateCombo(wxComboBox *pCombo, const std::map<int, wxString> &map
 	pCombo->AutoComplete(pCombo->GetStrings());
 }
 
-void IOPanel::OnCalculate(wxCommandEvent &event){
+void IOPanel::OnCalculateWings(wxCommandEvent &event){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
 	int relationCount = this->pRelationList->GetCount();
@@ -282,6 +309,9 @@ void IOPanel::OnCalculate(wxCommandEvent &event){
 		Matrix matrix = this->getMatrix();
 		this->runWings(matrix);
 	}
+}
+
+void IOPanel::OnCalculateAlmodes(wxCommandEvent &event){
 }
 
 Matrix IOPanel::getMatrix(){

@@ -1,7 +1,7 @@
 #include "MainFrame.hpp"
 using namespace ow;
 
-MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultPosition, wxSize(1366,768)){
+MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultPosition, wxSize(800,600)){
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
     this->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
     // menus

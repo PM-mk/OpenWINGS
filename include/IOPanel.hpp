@@ -29,7 +29,9 @@ namespace ow{
             wxListBox* pRelationList;
             wxCheckBox* pAbsValuesCheckbox;
             wxListView* pWingsList;
+            wxListView* pAlmodesList;
             mpWindow* pWingsPlot;
+            mpWindow* pAlmodesPlot;
             void AddElement(const wxString& item);
             void AddRelation(RelationshipData* pData);
             bool canAddRelation(RelationshipData* pData);
@@ -48,6 +50,7 @@ namespace ow{
             void OnAddRelation(wxCommandEvent& event);
             void OnDeleteRelation(wxCommandEvent& event);
             void OnEnterText(wxCommandEvent& event);
-            void OnCalculate(wxCommandEvent& event);
+            void OnCalculateWings(wxCommandEvent& event);
+            void OnCalculateAlmodes(wxCommandEvent& event);
     };
 } // namespace ow
