@@ -7,12 +7,14 @@
 #include <wx/notebook.h>
 #include <wx/statline.h>
 #include <wx/listctrl.h>
+#include <wx/spinctrl.h>
 #include <map>
 #include "ControlPanel.hpp"
 #include "helper.hpp"
 #include "RelationshipData.hpp"
 #include <Eigen/Dense>
 #include "mathplot.h"
+
 
 using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
 using Vector = Eigen::Vector<float, Eigen::Dynamic>;
@@ -32,6 +34,7 @@ namespace ow{
             wxListView* pAlmodesList;
             mpWindow* pWingsPlot;
             mpWindow* pAlmodesPlot;
+            wxSpinCtrl* pAlmodesTimeCtrl;
             void AddElement(const wxString& item);
             void AddRelation(RelationshipData* pData);
             bool canAddRelation(RelationshipData* pData);

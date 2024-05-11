@@ -122,6 +122,12 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	wxBoxSizer* pRunAlmodesBtnSizer;
 	pRunAlmodesBtnSizer = new wxBoxSizer(wxHORIZONTAL);
 
+	wxStaticText* pAlmodesCtrlText = new wxStaticText(pAlmodesPanel, wxID_ANY, wxT("Time"), wxDefaultPosition, wxDefaultSize);
+	pRunAlmodesBtnSizer->Add(pAlmodesCtrlText, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
+
+	pAlmodesTimeCtrl = new wxSpinCtrl(pAlmodesPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 999, 20);
+	pRunAlmodesBtnSizer->Add(pAlmodesTimeCtrl, 0, wxALL|wxEXPAND, 5);
+
 	wxButton* pBtnCalculateAlmodes = new wxButton(pAlmodesPanel, ID_RUN_ALMODES, wxT("Run ALMODES"), wxDefaultPosition, wxDefaultSize, 0);
 	pRunAlmodesBtnSizer->Add(pBtnCalculateAlmodes, 0, wxALL|wxEXPAND, 5);
 
