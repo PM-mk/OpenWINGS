@@ -14,7 +14,7 @@
 #include "RelationshipData.hpp"
 #include <Eigen/Dense>
 #include "mathplot.h"
-
+#include <numeric>
 
 using Matrix = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
 using Vector = Eigen::Vector<float, Eigen::Dynamic>;
@@ -47,6 +47,8 @@ namespace ow{
             Matrix getMatrix();
             void UpdateCombo(wxComboBox* pCombo, const std::map<int, wxString>& map);
             void runWings(Matrix& matrix);
+            void runAlmodes(Matrix& matrix);
+            std::vector<double> columnToVector(Matrix& matrix, const int& column);
         // handlers:
             void OnUpdate(wxCommandEvent& event);
             void OnAddElement(wxCommandEvent& event);

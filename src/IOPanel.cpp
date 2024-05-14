@@ -99,8 +99,6 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainWingsSizer->Add(pRunWingsBtnSizer, 0, wxALIGN_RIGHT, 5);
 	// WINGS plot
     pWingsPlot = new mpWindow(pWingsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
-    pWingsPlot->SetMargins(30, 30, 30, 30);
-
 	pMainWingsSizer->Add(pWingsPlot, 1, wxALL|wxEXPAND, 5);
 
 	pWingsList = new wxListView(pWingsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
@@ -134,8 +132,6 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainAlmodesSizer->Add(pRunAlmodesBtnSizer, 0, wxALIGN_RIGHT, 5);
 	// ALMODES plot
     pAlmodesPlot = new mpWindow(pAlmodesPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
-    pAlmodesPlot->SetMargins(30, 30, 30, 30);
-
 	pMainAlmodesSizer->Add(pAlmodesPlot, 1, wxALL|wxEXPAND, 5);
 
 	pAlmodesList = new wxListView(pAlmodesPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
@@ -319,9 +315,6 @@ void IOPanel::OnCalculateWings(wxCommandEvent &event){
 	}
 }
 
-void IOPanel::OnCalculateAlmodes(wxCommandEvent &event){
-}
-
 Matrix IOPanel::getMatrix(){
 	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
 	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
@@ -389,10 +382,10 @@ void IOPanel::runWings(Matrix& matrix){
 	this->pWingsList->Thaw();
 	// plot WINGS
 	this->pWingsPlot->DelAllLayers(true);
-    mpScaleX* xAxis = new mpScaleX(labelPrefix + wxT(" involvement"), mpALIGN_BOTTOM, true, mpX_NORMAL);
-    mpScaleY* yAxis = new mpScaleY(labelPrefix + wxT(" role"), mpALIGN_LEFT, true);
-    pWingsPlot->AddLayer(xAxis);
-    pWingsPlot->AddLayer(yAxis);
+    mpScaleX* xAxis = new mpScaleX(labelPrefix + wxT(" involvement"), mpALIGN_CENTER, false, mpX_NORMAL);
+    mpScaleY* yAxis = new mpScaleY(labelPrefix + wxT(" role"), mpALIGN_CENTER, false);
+    pWingsPlot->AddLayer(xAxis, false);
+    pWingsPlot->AddLayer(yAxis, false);
 	std::vector<double> xDataVector = {};
 	std::vector<double> yDataVector = {};
 	mpFXYVector* pVectorLayer = nullptr;
@@ -404,4 +397,78 @@ void IOPanel::runWings(Matrix& matrix){
 		this->pWingsPlot->AddLayer(pVectorLayer, false);
 	}
 	this->pWingsPlot->UpdateAll();
+}
+
+void IOPanel::OnCalculateAlmodes(wxCommandEvent &event){
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	int elementCount = pControl->pSidePanel->pElementList->GetItemCount();
+	int relationCount = this->pRelationList->GetCount();
+	if (elementCount >= 2 && relationCount){
+		Matrix matrix = this->getMatrix();
+		this->runAlmodes(matrix);
+	}
+}
+
+void IOPanel::runAlmodes(Matrix &matrix){
+	ControlPanel* pControl = dynamic_cast<ControlPanel*>(this->GetGrandParent());
+	const unsigned int time = pAlmodesTimeCtrl->GetValue();
+	// transform matrix
+	float scaleFactor = matrix.sum();
+	matrix = matrix / scaleFactor; /* matrix = A/s */
+	int n = matrix.cols();
+	Matrix matrixIS = (Matrix::Identity(n, n) - matrix).inverse(); /* matrix = (I - S)^(-1) */
+	matrix = matrix * matrixIS; /* matrix = S*[(I - S)^(-1)] = T */
+
+	Matrix matrixState = Matrix::Zero(time+1, n); /* vectors of element states for each time interval */
+	for(auto i = 0; i < n; i++){ /* set initial state s(0) to 1's */
+		matrixState(0, i) = 1;
+	}
+	Matrix matrixStateAcc = Matrix(matrixState);
+	// calculate accumulated state vectors
+	for(auto t = 0; t < time; t++){
+		matrixState(t+1, Eigen::all) = matrixState(t, Eigen::all) * matrix;
+		matrixStateAcc(t+1, Eigen::all) = matrixStateAcc(t, Eigen::all) + matrixState(t+1, Eigen::all);
+	}
+	// fill table
+	this->pAlmodesList->DeleteAllItems();
+	this->pAlmodesList->Freeze();
+	long record = 0;
+	long ndx = 0;
+	for (auto i = 0; i < n; i++){
+		ndx = this->pAlmodesList->InsertItem(record++, pControl->pSidePanel->pElementList->GetItemText(i, 1));
+		this->pAlmodesList->SetItem(ndx, 1, wxString::Format(wxT("%f"), matrixStateAcc(Eigen::last, i)));
+		// this->pAlmodesList->SetItem(ndx, 2, wxString::Format(wxT("%f"), receptivityVector(i)));
+		// this->pAlmodesList->SetItem(ndx, 3, wxString::Format(wxT("%f"), involvementVector(i)));
+		// this->pAlmodesList->SetItem(ndx, 4, wxString::Format(wxT("%f"), roleVector(i)));
+	}
+	this->pAlmodesList->Thaw();
+	// plot almodes
+	this->pAlmodesPlot->DelAllLayers(true);
+    mpScaleX* xAxis = new mpScaleX(wxT("Time"), mpALIGN_CENTER, true, mpX_NORMAL);
+    mpScaleY* yAxis = new mpScaleY(wxT("State"), mpALIGN_CENTER, false);
+    pAlmodesPlot->AddLayer(xAxis, false);
+    pAlmodesPlot->AddLayer(yAxis, false);
+	std::vector<double> xDataVector(time+1);
+	std::iota(std::begin(xDataVector), std::end(xDataVector), 0);
+	std::vector<double> yDataVector = {};
+	yDataVector.resize(matrixStateAcc.rows());
+	mpFXYVector* pVectorLayer = nullptr;
+	for (auto i = 0; i < n; i++){
+		// copy each column to yDataVector
+		yDataVector = columnToVector(matrixStateAcc, i);
+		pVectorLayer = new mpFXYVector(pControl->pSidePanel->pElementList->GetItemText(i, 1));
+		pVectorLayer->SetData(xDataVector, yDataVector);
+		pVectorLayer->SetContinuity(true);
+		this->pAlmodesPlot->AddLayer(pVectorLayer, false);
+	}
+	this->pAlmodesPlot->UpdateAll();
+}
+
+std::vector<double> IOPanel::columnToVector(Matrix &matrix, const int& column){
+	std::vector<double> vec = {};
+	const int rows = matrix.rows();
+	for (auto i = 0; i < rows; i++){
+		vec.push_back(matrix(i, column));
+	}
+    return vec;
 }
