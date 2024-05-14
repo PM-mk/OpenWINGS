@@ -136,10 +136,10 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 
 	pAlmodesList = new wxListView(pAlmodesPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
 	pAlmodesList->InsertColumn(0, wxT("Label"), 0, 225);
-	pAlmodesList->InsertColumn(1, wxT("Impact"));
-	pAlmodesList->InsertColumn(2, wxT("Receptivity"));
-	pAlmodesList->InsertColumn(3, wxT("Involvement"));
-	pAlmodesList->InsertColumn(4, wxT("Role"));
+	pAlmodesList->InsertColumn(1, wxT("Impact(t)"));
+	pAlmodesList->InsertColumn(2, wxT("Receptivity(t)"));
+	pAlmodesList->InsertColumn(3, wxT("Involvement(t)"));
+	pAlmodesList->InsertColumn(4, wxT("Role(t)"));
 	pMainAlmodesSizer->Add(pAlmodesList, 1, wxALL|wxEXPAND, 5);
 	pAlmodesPanel->SetSizer(pMainAlmodesSizer);
 	pAlmodesPanel->Layout();
@@ -419,27 +419,37 @@ void IOPanel::runAlmodes(Matrix &matrix){
 	Matrix matrixIS = (Matrix::Identity(n, n) - matrix).inverse(); /* matrix = (I - S)^(-1) */
 	matrix = matrix * matrixIS; /* matrix = S*[(I - S)^(-1)] = T */
 
-	Matrix matrixState = Matrix::Zero(time+1, n); /* vectors of element states for each time interval */
-	for(auto i = 0; i < n; i++){ /* set initial state s(0) to 1's */
-		matrixState(0, i) = 1;
+	Matrix matrixStateP = Matrix::Zero(time+1, n); /* vectors of element states for each time interval */
+	Matrix matrixState = Matrix::Zero(n, time+1);
+	for(auto i = 0; i < n; i++){ /* set initial state s(0) and s'(0) to 1's */
+		matrixStateP(0, i) = 1;
+		matrixState(i, 0) = 1;
 	}
+	Matrix matrixStatePAcc = Matrix(matrixStateP);
 	Matrix matrixStateAcc = Matrix(matrixState);
 	// calculate accumulated state vectors
 	for(auto t = 0; t < time; t++){
-		matrixState(t+1, Eigen::all) = matrixState(t, Eigen::all) * matrix;
-		matrixStateAcc(t+1, Eigen::all) = matrixStateAcc(t, Eigen::all) + matrixState(t+1, Eigen::all);
+		matrixStateP(t+1, Eigen::all) = matrixStateP(t, Eigen::all) * matrix;
+		matrixStatePAcc(t+1, Eigen::all) = matrixStatePAcc(t, Eigen::all) + matrixStateP(t+1, Eigen::all);
+
+		matrixState(Eigen::all, t+1) = matrix * matrixState(Eigen::all, t);
+		matrixStateAcc(Eigen::all, t+1) = matrixStateAcc(Eigen::all, t) + matrixState(Eigen::all, t+1);
 	}
 	// fill table
-	this->pAlmodesList->DeleteAllItems();
-	this->pAlmodesList->Freeze();
 	long record = 0;
 	long ndx = 0;
+	float impactT = 0;
+	float receptivityT = 0;
+	this->pAlmodesList->DeleteAllItems();
+	this->pAlmodesList->Freeze();
 	for (auto i = 0; i < n; i++){
+		receptivityT = matrixStatePAcc(Eigen::last, i);
+		impactT = matrixStateAcc(i, Eigen::last);
 		ndx = this->pAlmodesList->InsertItem(record++, pControl->pSidePanel->pElementList->GetItemText(i, 1));
-		this->pAlmodesList->SetItem(ndx, 1, wxString::Format(wxT("%f"), matrixStateAcc(Eigen::last, i)));
-		// this->pAlmodesList->SetItem(ndx, 2, wxString::Format(wxT("%f"), receptivityVector(i)));
-		// this->pAlmodesList->SetItem(ndx, 3, wxString::Format(wxT("%f"), involvementVector(i)));
-		// this->pAlmodesList->SetItem(ndx, 4, wxString::Format(wxT("%f"), roleVector(i)));
+		this->pAlmodesList->SetItem(ndx, 1, wxString::Format(wxT("%f"), impactT));
+		this->pAlmodesList->SetItem(ndx, 2, wxString::Format(wxT("%f"), receptivityT));
+		this->pAlmodesList->SetItem(ndx, 3, wxString::Format(wxT("%f"), impactT + receptivityT));
+		this->pAlmodesList->SetItem(ndx, 4, wxString::Format(wxT("%f"), impactT - receptivityT));
 	}
 	this->pAlmodesList->Thaw();
 	// plot almodes
@@ -451,11 +461,10 @@ void IOPanel::runAlmodes(Matrix &matrix){
 	std::vector<double> xDataVector(time+1);
 	std::iota(std::begin(xDataVector), std::end(xDataVector), 0);
 	std::vector<double> yDataVector = {};
-	yDataVector.resize(matrixStateAcc.rows());
 	mpFXYVector* pVectorLayer = nullptr;
 	for (auto i = 0; i < n; i++){
 		// copy each column to yDataVector
-		yDataVector = columnToVector(matrixStateAcc, i);
+		yDataVector = columnToVector(matrixStatePAcc, i);
 		pVectorLayer = new mpFXYVector(pControl->pSidePanel->pElementList->GetItemText(i, 1));
 		pVectorLayer->SetData(xDataVector, yDataVector);
 		pVectorLayer->SetContinuity(true);
