@@ -25,7 +25,6 @@ ControlPanel::ControlPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefau
 	};
 	weightsMap = defaultScale;
 	influencesMap = defaultScale;
-	elementMap = {};
 
 	// send events
     Bind(wxEVT_IDLE, &ControlPanel::OnIdle, this, wxID_ANY);

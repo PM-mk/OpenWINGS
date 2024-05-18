@@ -39,15 +39,27 @@ AboutFrame::AboutFrame(wxWindow* parent) :
     wxString aboutMathPlot = wxT("Plotting handled with wxMathPlot 0.2.0");
     wxStaticText* pPlotTextCtrl = new wxStaticText( this, wxID_ANY, aboutMathPlot, wxDefaultPosition, wxDefaultSize);
     pPlotTextCtrl->Wrap(-1);
-    wxHyperlinkCtrl* pLinkXml = new wxHyperlinkCtrl(this, wxID_ANY, wxT("wxmathplot.sourceforge.io/"),
-        wxT("https://wxmathplot.sourceforge.io/"), wxDefaultPosition, wxDefaultSize);
+    wxHyperlinkCtrl* pLinkXml = new wxHyperlinkCtrl(this, wxID_ANY, wxT("wxmathplot.sourceforge.io"),
+        wxT("https://wxmathplot.sourceforge.io"), wxDefaultPosition, wxDefaultSize);
     pSizerPlotCredit->Add(pPlotTextCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
     pSizerPlotCredit->Add(pLinkXml, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+
+    // Eigen3 credits
+    wxBoxSizer* pSizerEigenCredit = new wxBoxSizer(wxVERTICAL);
+    wxString aboutEigen = wxString::Format(wxT("Linear algebra handled with Eigen %i.%i.%i"),
+        EIGEN_WORLD_VERSION, EIGEN_MAJOR_VERSION, EIGEN_MINOR_VERSION);
+    wxStaticText* pEigenTextCtrl = new wxStaticText( this, wxID_ANY, aboutEigen, wxDefaultPosition, wxDefaultSize);
+    pEigenTextCtrl->Wrap(-1);
+    wxHyperlinkCtrl* pLinkEigen = new wxHyperlinkCtrl(this, wxID_ANY, wxT("eigen.tuxfamily.org"),
+        wxT("https://eigen.tuxfamily.org"), wxDefaultPosition, wxDefaultSize);
+    pSizerEigenCredit->Add(pEigenTextCtrl, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
+    pSizerEigenCredit->Add(pLinkEigen, 0, wxALL|wxALIGN_CENTER_HORIZONTAL, 5);
 
     // finish frame
     pAboutText->SetFocus(); // set focus on wxStaticText control to prevent focus frame from showing
     pSizerMain->Add(pSizerWxCredit, 0, wxEXPAND, 5);
     pSizerMain->Add(pSizerPlotCredit, 0, wxEXPAND, 5);
+    pSizerMain->Add(pSizerEigenCredit, 0, wxEXPAND, 5);
     this->SetSizer(pSizerMain);
     this->Layout();
     this->Fit();

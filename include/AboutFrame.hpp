@@ -7,6 +7,7 @@
 #include <wx/statline.h>
 #include "ow_logo.xpm"
 #include "config.hpp"
+#include <Eigen/Core>
 
 namespace ow{
     class AboutFrame : public wxDialog{

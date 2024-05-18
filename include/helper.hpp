@@ -16,7 +16,9 @@ namespace ow{
         ID_WEIGHT_COMBO,
         ID_INFLUENCE_COMBO,
         ID_RUN_WINGS,
-        ID_RUN_ALMODES
+        ID_RUN_ALMODES,
+        ID_WINGS_LIST,
+        ID_ALMODES_LIST
     };
     void ErrMsg(wxWindow* window, const wxString& msg);
     bool Ask(wxWindow* window, const wxString& msg);

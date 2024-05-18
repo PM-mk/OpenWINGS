@@ -99,9 +99,10 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainWingsSizer->Add(pRunWingsBtnSizer, 0, wxALIGN_RIGHT, 5);
 	// WINGS plot
     pWingsPlot = new mpWindow(pWingsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
+	pWingsPlot->SetMPScrollbars(true);
 	pMainWingsSizer->Add(pWingsPlot, 1, wxALL|wxEXPAND, 5);
 
-	pWingsList = new wxListView(pWingsPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	pWingsList = new wxListView(pWingsPanel, ID_WINGS_LIST, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
 	pWingsList->InsertColumn(0, wxT("Label"), 0, 225);
 	pWingsList->InsertColumn(1, wxT("Impact"));
 	pWingsList->InsertColumn(2, wxT("Receptivity"));
@@ -123,7 +124,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	wxStaticText* pAlmodesCtrlText = new wxStaticText(pAlmodesPanel, wxID_ANY, wxT("Time"), wxDefaultPosition, wxDefaultSize);
 	pRunAlmodesBtnSizer->Add(pAlmodesCtrlText, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5);
 
-	pAlmodesTimeCtrl = new wxSpinCtrl(pAlmodesPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 999, 20);
+	pAlmodesTimeCtrl = new wxSpinCtrl(pAlmodesPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 999, 10);
 	pRunAlmodesBtnSizer->Add(pAlmodesTimeCtrl, 0, wxALL|wxEXPAND, 5);
 
 	wxButton* pBtnCalculateAlmodes = new wxButton(pAlmodesPanel, ID_RUN_ALMODES, wxT("Run ALMODES"), wxDefaultPosition, wxDefaultSize, 0);
@@ -132,9 +133,10 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	pMainAlmodesSizer->Add(pRunAlmodesBtnSizer, 0, wxALIGN_RIGHT, 5);
 	// ALMODES plot
     pAlmodesPlot = new mpWindow(pAlmodesPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER);
+	pAlmodesPlot->SetMPScrollbars(true);
 	pMainAlmodesSizer->Add(pAlmodesPlot, 1, wxALL|wxEXPAND, 5);
 
-	pAlmodesList = new wxListView(pAlmodesPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+	pAlmodesList = new wxListView(pAlmodesPanel, ID_ALMODES_LIST, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
 	pAlmodesList->InsertColumn(0, wxT("Label"), 0, 225);
 	pAlmodesList->InsertColumn(1, wxT("Impact(t)"));
 	pAlmodesList->InsertColumn(2, wxT("Receptivity(t)"));
@@ -155,6 +157,8 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
     Bind(wxEVT_TEXT_ENTER, &IOPanel::OnEnterText, this);
     Bind(wxEVT_BUTTON, &IOPanel::OnCalculateWings, this, ID_RUN_WINGS);
     Bind(wxEVT_BUTTON, &IOPanel::OnCalculateAlmodes, this, ID_RUN_ALMODES);
+    Bind(wxEVT_LIST_ITEM_ACTIVATED, &IOPanel::OnActivateListItem, this, ID_WINGS_LIST);
+    Bind(wxEVT_LIST_ITEM_ACTIVATED, &IOPanel::OnActivateListItem, this, ID_ALMODES_LIST);
 
 	this->SetSizer(pMainSizer);
 	this->Layout();
@@ -368,12 +372,11 @@ void IOPanel::runWings(Matrix& matrix){
 	involvementVector = impactVector + receptivityVector;
 	roleVector = impactVector - receptivityVector;
 	// fill value table
-	long record = 0;
 	long ndx = 0;
 	this->pWingsList->DeleteAllItems();
 	this->pWingsList->Freeze();
 	for (auto i = 0; i < n; i++){
-		ndx = this->pWingsList->InsertItem(record++, pControl->pSidePanel->pElementList->GetItemText(i, 1));
+		ndx = this->pWingsList->InsertItem(i, pControl->pSidePanel->pElementList->GetItemText(i, 1));
 		this->pWingsList->SetItem(ndx, 1, wxString::Format(wxT("%f"), impactVector(i)));
 		this->pWingsList->SetItem(ndx, 2, wxString::Format(wxT("%f"), receptivityVector(i)));
 		this->pWingsList->SetItem(ndx, 3, wxString::Format(wxT("%f"), involvementVector(i)));
@@ -395,6 +398,7 @@ void IOPanel::runWings(Matrix& matrix){
 		pVectorLayer = new mpFXYVector(pControl->pSidePanel->pElementList->GetItemText(i, 1));
 		pVectorLayer->SetData(xDataVector, yDataVector);
 		this->pWingsPlot->AddLayer(pVectorLayer, false);
+		pVectorLayer->SetVisible(false);
 	}
 	this->pWingsPlot->UpdateAll();
 }
@@ -406,6 +410,27 @@ void IOPanel::OnCalculateAlmodes(wxCommandEvent &event){
 	if (elementCount >= 2 && relationCount){
 		Matrix matrix = this->getMatrix();
 		this->runAlmodes(matrix);
+	}
+}
+
+void IOPanel::OnActivateListItem(wxListEvent &event){
+	wxListView* pList = dynamic_cast<wxListView*>(event.GetEventObject());
+	int listId = pList->GetId();
+	mpWindow* pPlot = nullptr;
+	if(listId == ID_WINGS_LIST){
+		pPlot = this->pWingsPlot;
+	}
+	else if(listId == ID_ALMODES_LIST){
+		pPlot = this->pAlmodesPlot;
+	}
+
+	mpLayer* pLayer = pPlot->GetLayerByName(event.GetItem().GetText());
+	if(pLayer){
+		bool isLayerVisible = pLayer->IsVisible();
+		pLayer->SetVisible(!isLayerVisible);
+		wxColor color = (isLayerVisible) ? *wxBLACK : *wxBLUE;
+		pList->SetItemTextColour(event.GetItem().GetId(), color);
+		pPlot->Fit();
 	}
 }
 
@@ -436,7 +461,6 @@ void IOPanel::runAlmodes(Matrix &matrix){
 		matrixStateAcc(Eigen::all, t+1) = matrixStateAcc(Eigen::all, t) + matrixState(Eigen::all, t+1);
 	}
 	// fill table
-	long record = 0;
 	long ndx = 0;
 	float impactT = 0;
 	float receptivityT = 0;
@@ -445,7 +469,7 @@ void IOPanel::runAlmodes(Matrix &matrix){
 	for (auto i = 0; i < n; i++){
 		receptivityT = matrixStatePAcc(Eigen::last, i);
 		impactT = matrixStateAcc(i, Eigen::last);
-		ndx = this->pAlmodesList->InsertItem(record++, pControl->pSidePanel->pElementList->GetItemText(i, 1));
+		ndx = this->pAlmodesList->InsertItem(i, pControl->pSidePanel->pElementList->GetItemText(i, 1));
 		this->pAlmodesList->SetItem(ndx, 1, wxString::Format(wxT("%f"), impactT));
 		this->pAlmodesList->SetItem(ndx, 2, wxString::Format(wxT("%f"), receptivityT));
 		this->pAlmodesList->SetItem(ndx, 3, wxString::Format(wxT("%f"), impactT + receptivityT));
@@ -469,6 +493,7 @@ void IOPanel::runAlmodes(Matrix &matrix){
 		pVectorLayer->SetData(xDataVector, yDataVector);
 		pVectorLayer->SetContinuity(true);
 		this->pAlmodesPlot->AddLayer(pVectorLayer, false);
+		pVectorLayer->SetVisible(false);
 	}
 	this->pAlmodesPlot->UpdateAll();
 }

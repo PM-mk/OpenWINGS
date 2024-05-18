@@ -57,5 +57,6 @@ namespace ow{
             void OnEnterText(wxCommandEvent& event);
             void OnCalculateWings(wxCommandEvent& event);
             void OnCalculateAlmodes(wxCommandEvent& event);
+            void OnActivateListItem(wxListEvent& event);
     };
 } // namespace ow

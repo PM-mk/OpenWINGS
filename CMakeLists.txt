@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.29.0)
-project(OpenWINGS VERSION 0.1.0 LANGUAGES CXX)
+project(OpenWINGS VERSION 1.1.0 LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
 configure_file(config.hpp.in ../include/config.hpp)
