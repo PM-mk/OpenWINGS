@@ -8,6 +8,7 @@
 #include "OpenWingsApp.hpp"
 #include "ControlPanel.hpp"
 #include "helper.hpp"
+#include "ow_background_gray.xpm"
 
 namespace ow{
     class MainFrame : public wxFrame{

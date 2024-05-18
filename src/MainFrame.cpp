@@ -36,8 +36,12 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pStartPanel->SetSizer(pStartSizer);
     pStartPanel->Layout();
     pStartSizer->Fit(pStartPanel);
-    wxStaticText* pStartTxt = new wxStaticText(pStartPanel, wxID_ANY, wxT("Start"),
+    wxStaticText* pStartTxt = new wxStaticText(pStartPanel, wxID_ANY, wxT("Ctrl+N - New project\nCtrl+O - Open file\nCtrl+Q - Quit"),
         wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
+    wxStaticBitmap* pBackgroundBitmap = new wxStaticBitmap(pStartPanel, wxID_ANY, wxBitmap(ow_background_gray_xpm), wxDefaultPosition, wxDefaultSize, 0);
+    pBackgroundBitmap->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
+    pStartSizer->Add(pBackgroundBitmap, 0, wxALIGN_CENTER_HORIZONTAL, 5);
+
     pStartSizer->Add(pStartTxt, 1, wxEXPAND, 0);
     pMainSizer->Add(pStartPanel, 1, wxEXPAND, 0);
 
