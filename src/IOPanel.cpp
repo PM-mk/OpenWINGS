@@ -392,11 +392,13 @@ void IOPanel::runWings(Matrix& matrix){
 	std::vector<double> xDataVector = {};
 	std::vector<double> yDataVector = {};
 	mpFXYVector* pVectorLayer = nullptr;
+	wxPen pen = wxPen(*wxBLUE, 5);
 	for (auto i = 0; i < n; i++){
 		xDataVector = {involvementVector[i]};
 		yDataVector = {roleVector[i]};
 		pVectorLayer = new mpFXYVector(pControl->pSidePanel->pElementList->GetItemText(i, 1));
 		pVectorLayer->SetData(xDataVector, yDataVector);
+		pVectorLayer->SetPen(pen);
 		this->pWingsPlot->AddLayer(pVectorLayer, false);
 		pVectorLayer->SetVisible(false);
 	}
@@ -485,6 +487,7 @@ void IOPanel::runAlmodes(Matrix &matrix){
 	std::vector<double> xDataVector(time+1);
 	std::iota(std::begin(xDataVector), std::end(xDataVector), 0);
 	std::vector<double> yDataVector = {};
+	wxPen pen = wxPen(*wxBLUE, 2);
 	mpFXYVector* pVectorLayer = nullptr;
 	for (auto i = 0; i < n; i++){
 		// copy each column to yDataVector
@@ -492,6 +495,7 @@ void IOPanel::runAlmodes(Matrix &matrix){
 		pVectorLayer = new mpFXYVector(pControl->pSidePanel->pElementList->GetItemText(i, 1));
 		pVectorLayer->SetData(xDataVector, yDataVector);
 		pVectorLayer->SetContinuity(true);
+		pVectorLayer->SetPen(pen);
 		this->pAlmodesPlot->AddLayer(pVectorLayer, false);
 		pVectorLayer->SetVisible(false);
 	}
