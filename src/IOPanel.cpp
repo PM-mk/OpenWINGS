@@ -10,8 +10,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 	wxBoxSizer* pMainInputSizer;
 	pMainInputSizer = new wxBoxSizer(wxVERTICAL);
 
-	wxBoxSizer* pElemEditSizer;
-	pElemEditSizer = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticBoxSizer* pElemEditSizer = new wxStaticBoxSizer(wxHORIZONTAL, pInputPanel, "New system element");
 
 	wxStaticText* pElemLabel1 = new wxStaticText(pInputPanel, wxID_ANY, wxT("Weight"), wxDefaultPosition, wxDefaultSize, 0);
 	pElemLabel1->Wrap(-1);
@@ -32,10 +31,7 @@ IOPanel::IOPanel(wxWindow* parent) : wxPanel(parent, wxID_ANY, wxDefaultPosition
 
 	pMainInputSizer->Add(pElemEditSizer, 0, wxEXPAND, 5);
 
-	wxStaticLine* pStaticLine = new wxStaticLine(pInputPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL);
-	pMainInputSizer->Add(pStaticLine, 0, wxEXPAND | wxALL, 5);
-
-	wxBoxSizer* pRelationSizer = new wxBoxSizer(wxHORIZONTAL);
+	wxStaticBoxSizer* pRelationSizer = new wxStaticBoxSizer(wxHORIZONTAL, pInputPanel, "New relationship");
 
 	wxBoxSizer* pRelaEditSizer1 = new wxBoxSizer(wxVERTICAL);
 	wxBoxSizer* pRelaEditSizer2 = new wxBoxSizer(wxVERTICAL);

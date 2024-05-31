@@ -7,7 +7,7 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     // menus
     wxMenu* pFileMenu = new wxMenu();
     pFileMenu->Append(ID_NEW_PROJECT, wxT("&New project\tCtrl+N"), wxT("Create new WINGS/ALMODES project"));
-    pFileMenu->Append(wxID_OPEN, wxT("&Open\tCtrl+O"), wxT("Open project"));
+    pFileMenu->Append(wxID_OPEN, wxT("&Open...\tCtrl+O"), wxT("Open project"));
     pFileMenu->Append(wxID_SEPARATOR);
     pFileMenu->Append(wxID_SAVE, wxT("&Save\tCtrl+S"), wxT("Save current project"));
     pFileMenu->Append(wxID_SAVEAS, wxT("Sa&ve as...\tCtrl+Shift+S"), wxT("Save current project as..."));
@@ -16,10 +16,10 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, wxT("OpenWINGS"), wxDefaultP
     pFileMenu->Enable(wxID_SAVE,false);
     pFileMenu->Enable(wxID_SAVEAS,false);
     wxMenu* pEditMenu = new wxMenu();
-    pEditMenu->Append(wxID_EDIT, wxT("&Edit scales\tCtrl+E"), wxT("Show scale editor"));
+    pEditMenu->Append(wxID_EDIT, wxT("&Edit scales...\tCtrl+E"), wxT("Show scale editor"));
     pEditMenu->Enable(wxID_EDIT,false);
     wxMenu* pHelpMenu = new wxMenu();
-    pHelpMenu->Append(wxID_ABOUT, wxT("&About...\tF1"), wxT("Show about dialog"));
+    pHelpMenu->Append(wxID_ABOUT, wxT("&About\tF1"), wxT("Show about dialog"));
     // menu bar
     wxMenuBar* pMenuBar = new wxMenuBar();
     pMenuBar->Append(pFileMenu, wxT("&File"));

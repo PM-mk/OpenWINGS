@@ -5,7 +5,6 @@
 #endif // WX_PRECOMP
 #include <wx/artprov.h>
 #include <wx/notebook.h>
-#include <wx/statline.h>
 #include <wx/listctrl.h>
 #include <wx/spinctrl.h>
 #include <map>
