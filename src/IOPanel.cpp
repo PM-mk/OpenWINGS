@@ -323,7 +323,7 @@ Matrix IOPanel::getMatrix(){
 	// fill weight values
 	for(int i = 0; i<elementCount; i++){
 		value = pControl->scaleStrToInt(pControl->pSidePanel->pElementList->GetItemText(i, 0), true);
-		matrix(i, i) += value;
+		matrix(i, i) = value;
 	}
 	// fill influence values
 	int relationCount = this->pRelationList->GetCount();
@@ -334,7 +334,7 @@ Matrix IOPanel::getMatrix(){
 		pData = dynamic_cast<RelationshipData*>(this->pRelationList->GetClientObject(i));
 		x = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->source.label);
 		y = ow::findRecord(pControl->pSidePanel->pElementList, 1, pData->target.label);
-		matrix(x, y) += pData->influenceValue;
+		matrix(x, y) = pData->influenceValue;
 	}
     return matrix;
 }
